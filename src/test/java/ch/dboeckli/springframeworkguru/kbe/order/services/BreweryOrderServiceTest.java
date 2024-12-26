@@ -1,12 +1,10 @@
-package ch.dboeckli.template;
-// TODO: RENAME PACKAGE
+package ch.dboeckli.springframeworkguru.kbe.order.services;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-// TODO: RENAME ME
-class Spring6TemplateApplicationTest {
+class BreweryOrderServiceTest {
 
     @Test
     void contextLoads() {
