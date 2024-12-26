@@ -1,9 +1,28 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: kbe-brewery-order-micro-service
   docker:
     compose:
       enabled: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-date-timestamps-as-nanoseconds: true
+  zipkin:
+    enabled: false
+  cloud:
+    discovery:
+      enabled: false
+  artemis:
+    user: artemis
+    password: simetraehcapa
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default    
 
 management:
   health:
@@ -24,6 +43,7 @@ management:
 logging:
   level:
     org.zalando.logbook: TRACE
+    org.springframework.statemachine.support: error
 
 logbook:
   filter:
@@ -40,3 +60,10 @@ logbook:
   predicate:
     exclude:
       - path: /actuator/health
+        
+sfg:
+  brewery:
+    beer-service-host: http://localhost:8080
+  tasting:
+    room:
+      rate: 500        
