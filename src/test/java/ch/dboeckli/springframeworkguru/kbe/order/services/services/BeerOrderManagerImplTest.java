@@ -115,6 +115,18 @@ class BeerOrderManagerImplTest {
         wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
                 .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
+        // Create a list of BeerDto object
+        BeerPagedList beerPagedList = new BeerPagedList(
+            Arrays.asList(
+                BeerDto.builder().id(beerId).upc("1234").build(),
+                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
+            ),
+            PageRequest.of(0, 25),
+            2
+        );
+        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
+            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+
         BeerOrder orderToSave = createBeerOrder();
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
@@ -137,14 +149,18 @@ class BeerOrderManagerImplTest {
 
         wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
                 .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
-        
+
         // Create a list of BeerDto object
-        List<BeerDto> beerList = Arrays.asList(
-            BeerDto.builder().id(UUID.randomUUID()).upc("1234").build(),
-            BeerDto.builder().id(UUID.randomUUID()).upc("67890").build()
+        BeerPagedList beerPagedList = new BeerPagedList(
+            Arrays.asList(
+                BeerDto.builder().id(beerId).upc("1234").build(),
+                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
+            ),
+            PageRequest.of(0, 25),
+            2
         );
         wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerList))));
+            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
         log.info("### Registered stubs: " + wireMockServer.getStubMappings());
         BeerOrder orderToSave = createBeerOrder();
@@ -185,13 +201,17 @@ class BeerOrderManagerImplTest {
         wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
                 .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
-        // Create a list of BeerDto objects
-        List<BeerDto> beerList = Arrays.asList(
-            BeerDto.builder().id(UUID.randomUUID()).upc("12345").build(),
-            BeerDto.builder().id(UUID.randomUUID()).upc("67890").build()
+        // Create a list of BeerDto object
+        BeerPagedList beerPagedList = new BeerPagedList(
+            Arrays.asList(
+                BeerDto.builder().id(beerId).upc("12345").build(),
+                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
+            ),
+            PageRequest.of(0, 25),
+            2
         );
         wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerList))));
+            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
         BeerOrder beerOrder = createBeerOrder();
         beerOrder.setCustomerRef("fail-validation");
@@ -246,7 +266,7 @@ class BeerOrderManagerImplTest {
         // Create a list of BeerDto object
         BeerPagedList beerPagedList = new BeerPagedList(
             Arrays.asList(
-                BeerDto.builder().id(beerId).upc("1234").build(),
+                BeerDto.builder().id(beerId).upc("12345").build(),
                 BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
             ),
             PageRequest.of(0, 25),
