@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.springframework.statemachine</groupId>
             <artifactId>spring-statemachine-core</artifactId>
-            <version>2.1.2.RELEASE</version> <!-- ORIG VERSION IS 2.1.2.RELEASE -->
+            <version>4.0.0</version> <!-- ORIG VERSION IS 4.0.0 -->
         </dependency>
         <!-- TODO: CHECK THIS ONE. ORIG DOES USE THE CORE DEPENDENCY -->
         <!-- TODO: ADD VERSION TO PROPERTIES SECTION -->
