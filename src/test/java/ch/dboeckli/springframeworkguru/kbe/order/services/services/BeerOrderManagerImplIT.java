@@ -19,10 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestTemplate;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.WireMockConfigurationCustomizer;
@@ -52,6 +56,9 @@ class BeerOrderManagerImplIT {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
 
     @Value("${wiremock.server.baseUrl}")
     private String wireMockUrl;
@@ -86,6 +93,7 @@ class BeerOrderManagerImplIT {
     void setUp() {
         testCustomer = customerRepository.save(Customer.builder().customerName("Test Customer").build());
         log.info("WireMock server Running at {}:{}", wireMockUrl, wireMockPort);
+        checkWireMockServer();
     }
 
     @Test
@@ -220,5 +228,13 @@ class BeerOrderManagerImplIT {
         lines.add(BeerOrderLine.builder().beerId(beerId).orderQuantity(1).beerOrder(beerOrder).build());
         beerOrder.setBeerOrderLines(lines);
         return beerOrder;
+    }
+
+    private void checkWireMockServer() {
+        String url = wireMockUrl + "/__admin/";
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        HttpStatusCode statusCode = restTemplate.getForEntity(url, String.class).getStatusCode();
+        
+        assertThat(statusCode).isEqualTo(HttpStatus.OK);
     }
 }
