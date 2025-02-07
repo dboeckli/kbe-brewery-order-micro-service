@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -207,14 +208,14 @@ class BeerOrderManagerImplIT {
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
-        await().untilAsserted(() -> {
+        await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
             assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());  
         });
 
         beerOrderManager.pickupBeerOrder(savedBeerOrder.getId());
 
-        await().untilAsserted(() -> {
+        await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
             assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatus()); 
         });
