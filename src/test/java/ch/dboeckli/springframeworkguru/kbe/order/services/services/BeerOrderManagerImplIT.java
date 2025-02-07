@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
         configurationCustomizers = BeerOrderManagerImplIT.Customizer.class)
 })
 @ActiveProfiles("it-test")
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
 class BeerOrderManagerImplIT {
 
