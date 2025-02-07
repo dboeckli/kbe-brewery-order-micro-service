@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("docker")
+@ActiveProfiles("test")
 @Slf4j
 class ActuatorInfoIT {
 

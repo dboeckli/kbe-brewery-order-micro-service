@@ -1,9 +1,25 @@
 server:
   port: 8081
+  
+spring:
+  application:
+    name: kbe-brewery-order-micro-service
+    
+  jms:
+    pub-sub-domain: false
+    
+  docker:
+    compose:
+      enabled: true
+      stop:
+        command: down
+      skip:
+        in-tests: false
+      file: compose-it-test.yaml
 
 sfg:
   brewery:
-    beer-service-host: http://localhost:8083
+    beer-service-host: ${wiremock.server.baseUrl}
   tasting:
     room:
       rate: 500

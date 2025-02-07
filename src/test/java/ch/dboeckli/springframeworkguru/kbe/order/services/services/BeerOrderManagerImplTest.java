@@ -12,24 +12,28 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrder
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
+import org.wiremock.spring.WireMockConfigurationCustomizer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,34 +41,27 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest
-@EnableWireMock
+@EnableWireMock({
+    @ConfigureWireMock(
+        configurationCustomizers = BeerOrderManagerImplTest.Customizer.class)
+})
+@ActiveProfiles("it-test")
 @Slf4j
 class BeerOrderManagerImplTest {
 
     @Autowired
-    WireMockServer wireMockServer;
-
-    @Autowired
     ObjectMapper objectMapper;
 
-    @TestConfiguration
-    static class RestTemplateBuilderProvider {
-        @Bean(destroyMethod = "stop")
-        public WireMockServer wireMockServer() {
-            /*
-            WireMockServer server =  new WireMockServer(8083);
-            server.start();
-            return server;
-            */
-            
-            log.info("Initializing WireMock server...");
-            WireMockServer server = new WireMockServer(
-                new WireMockConfiguration().port(8083)
-                    .withRootDirectory("src/test/resources/wiremockstubs")
-            );
-            server.start();
-            log.info("WireMock server started on port " + server.port());
-            return server;
+    @Value("${wiremock.server.baseUrl}")
+    private String wireMockUrl;
+
+    @Value("${wiremock.server.port}")
+    private String wireMockPort;
+
+    static class Customizer implements WireMockConfigurationCustomizer {
+        @Override
+        public void customize(WireMockConfiguration configuration, ConfigureWireMock options) {
+            configuration.withRootDirectory("src/test/resources/wiremockstubs");
         }
     }
 
@@ -86,22 +83,15 @@ class BeerOrderManagerImplTest {
 
     @BeforeEach
     void setUp() {
-        testCustomer = customerRepository.save(Customer.builder()
-                .customerName("Test Customer")
-                .build());
+        testCustomer = customerRepository.save(Customer.builder().customerName("Test Customer").build());
+        log.info("WireMock server Running at {}:{}", wireMockUrl, wireMockPort);
     }
 
-    public BeerOrder createBeerOrder(){
-        BeerOrder beerOrder = BeerOrder.builder()
-                .customer(testCustomer)
-                .build();
+    public BeerOrder createBeerOrder() {
+        BeerOrder beerOrder = BeerOrder.builder().customer(testCustomer).build();
 
         Set<BeerOrderLine> lines = new HashSet<>();
-        lines.add(BeerOrderLine.builder()
-                .beerId(beerId)
-                .orderQuantity(1)
-                .beerOrder(beerOrder)
-                .build());
+        lines.add(BeerOrderLine.builder().beerId(beerId).orderQuantity(1).beerOrder(beerOrder).build());
 
         beerOrder.setBeerOrderLines(lines);
 
@@ -112,147 +102,93 @@ class BeerOrderManagerImplTest {
     void testNewToAllocate() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("1234").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
-                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(
-            Arrays.asList(
-                BeerDto.builder().id(beerId).upc("1234").build(),
-                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
-            ),
-            PageRequest.of(0, 25),
-            2
-        );
-        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(BeerDto.builder().id(beerId).upc("1234").build(), BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), PageRequest.of(0, 25), 2);
+        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
         BeerOrder orderToSave = createBeerOrder();
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
-
+        AtomicReference<BeerOrder> foundBeerOrderRef = new AtomicReference<>();
         await().untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getOne(savedOrder.getId());
-
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus());  // TODO: should be ALLOCATED, BUT NEW
+            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            foundBeerOrderRef.set(foundOrder);
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
-
-        BeerOrder foundOrder = beerOrderRepository.getOne(savedOrder.getId());
-
+        BeerOrder foundOrder = foundBeerOrderRef.get();
         assertNotNull(foundOrder);
-        assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus()); // TODO: should be ALLOCATED, BUT NEW
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
     }
 
     @Test
-    void testGoodOrderHappyPath() throws  JsonProcessingException {
+    void testGoodOrderHappyPath() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("1234").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
-                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(
-            Arrays.asList(
-                BeerDto.builder().id(beerId).upc("1234").build(),
-                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
-            ),
-            PageRequest.of(0, 25),
-            2
-        );
-        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(BeerDto.builder().id(beerId).upc("1234").build(), BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), PageRequest.of(0, 25), 2);
+        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
-        log.info("### Registered stubs: " + wireMockServer.getStubMappings());
         BeerOrder orderToSave = createBeerOrder();
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
-
+        AtomicReference<BeerOrder> foundBeerOrderRef = new AtomicReference<>();
         await().untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getOne(savedOrder.getId());
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus()); // TODO: ALLOCATED, BUT NEW
+            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            foundBeerOrderRef.set(foundOrder);
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus()); 
         });
-
-        BeerOrder foundOrder = beerOrderRepository.getOne(savedOrder.getId());
-
+        BeerOrder foundOrder = foundBeerOrderRef.get();
         assertNotNull(foundOrder);
-
-        System.out.println(foundOrder);
-
+        
         //pickup order
-
         beerOrderManager.pickupBeerOrder(foundOrder.getId());
-
         await().untilAsserted(() -> {
-            BeerOrder orderCheck = beerOrderRepository.getOne(savedOrder.getId());
-
-            assertEquals(BeerOrderStatusEnum.NEW, orderCheck.getOrderStatus()); // TODO: PICKED_UP, BUT NEW
+            BeerOrder orderCheck = beerOrderRepository.getReferenceById(savedOrder.getId());
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, orderCheck.getOrderStatus()); 
         });
-
-    }
-
-    @Test
-    void beerOrderPassedValidation() {
     }
 
     @Test
     void beerOrderFailedValidation() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("12345").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
-                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(
-            Arrays.asList(
-                BeerDto.builder().id(beerId).upc("12345").build(),
-                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
-            ),
-            PageRequest.of(0, 25),
-            2
-        );
-        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(BeerDto.builder().id(beerId).upc("12345").build(), BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), PageRequest.of(0, 25), 2);
+        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
         BeerOrder beerOrder = createBeerOrder();
         beerOrder.setCustomerRef("fail-validation");
 
-        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+        beerOrderManager.newBeerOrder(beerOrder);
 
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus());  // TODO: EXPECTED VALIDATION_EXCEPTION
+            assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION, foundOrder.getOrderStatus());  
         });
     }
 
     @Test
-    void beerOrderAllocationPassed() {
-    }
-
-    @Test
-    void beerOrderAllocationPendingInventory() {
-    }
-
-    @Test
-    @Disabled // TODO: FAILING WITH ACTIVEMQ
     void beerOrderAllocationFailed() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("1234").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
-                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         BeerOrder orderToSave = createBeerOrder();
         orderToSave.setCustomerRef("allocation-fail");
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
-
         await().untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getOne(savedOrder.getId());
-
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus()); // TODO: should be ALLOCATION_ERROR, BUT NEW
+            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            assertEquals(BeerOrderStatusEnum.ALLOCATION_ERROR, foundOrder.getOrderStatus()); 
         });
 
         AllocationFailureEvent event = (AllocationFailureEvent) jmsTemplate.receiveAndConvert(JmsConfig.ALLOCATION_FAILURE_QUEUE);
-
         assertThat(event.getBeerOrderId()).isEqualTo(savedOrder.getId());
     }
 
@@ -260,20 +196,14 @@ class BeerOrderManagerImplTest {
     void pickupBeerOrder() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("12345").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString())
-                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
-        
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerId.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+
         // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(
-            Arrays.asList(
-                BeerDto.builder().id(beerId).upc("12345").build(),
-                BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()
-            ),
-            PageRequest.of(0, 25),
-            2
-        );
-        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
-            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(
+            BeerDto.builder().id(beerId).upc("12345").build(), 
+            BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), 
+            PageRequest.of(0, 25), 2);
+        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
 
         BeerOrder beerOrder = createBeerOrder();
 
@@ -281,19 +211,17 @@ class BeerOrderManagerImplTest {
 
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus());  // TODO: should be ALLOCATED, BUT NEW
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());  
         });
 
         beerOrderManager.pickupBeerOrder(savedBeerOrder.getId());
 
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.NEW, foundOrder.getOrderStatus()); // TODO: should be PICKED_UP, BUT NEW
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatus()); 
         });
-
-        BeerOrder pickedUpOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get(); 
-
-        assertEquals(BeerOrderStatusEnum.NEW, pickedUpOrder.getOrderStatus()); // TODO: should be PICKED_UP, BUT NEW
+        BeerOrder pickedUpOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+        assertEquals(BeerOrderStatusEnum.PICKED_UP, pickedUpOrder.getOrderStatus()); 
     }
 
 
