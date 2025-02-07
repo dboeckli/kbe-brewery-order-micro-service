@@ -7,11 +7,13 @@ services:
             MYSQL_DATABASE: beerservice
         ports:
           - '3306'    
+          
     jms:
         image: apache/activemq-artemis:2.39.0
         ports:
             - 8161:8161
             - 61616:61616
+            
     inventory-service:
         image: springframeworkguru/kbe-brewery-inventory-service
         ports:
@@ -28,10 +30,12 @@ services:
         labels:
             collect_logs_with_filebeat: "true"
             decode_log_event_to_json_object: "true"
+            
     inventory-failover:
         image: springframeworkguru/kbe-brewery-inventory-failover
         ports:
             - 8083:8083
+            
     beer-service:
         image: springframeworkguru/kbe-brewery-beer-service
         ports:

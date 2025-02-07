@@ -1,16 +1,4 @@
 services:
-    mysql:
-        image: mysql:5.7
-        environment:
-            MYSQL_ROOT_PASSWORD: dbpassword
-            MYSQL_DATABASE: beerservice
-        ports:
-          - '3306'
-        healthcheck:
-          test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "restadmin", "-ppassword" ]
-          interval: 10s
-          timeout: 5s
-          retries: 5  
     jms:
         image: apache/activemq-artemis:2.39.0
         ports:
