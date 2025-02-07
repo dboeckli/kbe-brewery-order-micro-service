@@ -88,17 +88,6 @@ class BeerOrderManagerImplIT {
         log.info("WireMock server Running at {}:{}", wireMockUrl, wireMockPort);
     }
 
-    public BeerOrder createBeerOrder() {
-        BeerOrder beerOrder = BeerOrder.builder().customer(testCustomer).build();
-
-        Set<BeerOrderLine> lines = new HashSet<>();
-        lines.add(BeerOrderLine.builder().beerId(beerId).orderQuantity(1).beerOrder(beerOrder).build());
-
-        beerOrder.setBeerOrderLines(lines);
-
-        return beerOrder;
-    }
-
     @Test
     void testNewToAllocate() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerId).upc("1234").build();
@@ -225,5 +214,11 @@ class BeerOrderManagerImplIT {
         assertEquals(BeerOrderStatusEnum.PICKED_UP, pickedUpOrder.getOrderStatus()); 
     }
 
-
+    private BeerOrder createBeerOrder() {
+        BeerOrder beerOrder = BeerOrder.builder().customer(testCustomer).build();
+        Set<BeerOrderLine> lines = new HashSet<>();
+        lines.add(BeerOrderLine.builder().beerId(beerId).orderQuantity(1).beerOrder(beerOrder).build());
+        beerOrder.setBeerOrderLines(lines);
+        return beerOrder;
+    }
 }
