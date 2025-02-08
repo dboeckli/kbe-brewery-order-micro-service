@@ -12,7 +12,9 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrder
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,12 +31,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
-import org.wiremock.spring.WireMockConfigurationCustomizer;
+import org.wiremock.spring.InjectWireMock;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -48,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @EnableWireMock({
     @ConfigureWireMock(
-        configurationCustomizers = BeerOrderManagerImplIT.Customizer.class)
+        filesUnderDirectory = "src/test/resources/wiremock"
+    )
 })
 @ActiveProfiles("it-test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -67,12 +67,8 @@ class BeerOrderManagerImplIT {
     @Value("${wiremock.server.port}")
     private String wireMockPort;
 
-    static class Customizer implements WireMockConfigurationCustomizer {
-        @Override
-        public void customize(WireMockConfiguration configuration, ConfigureWireMock options) {
-            configuration.withRootDirectory("src/test/resources/wiremockstubs");
-        }
-    }
+    @InjectWireMock
+    WireMockServer wireMockServer;
 
     @Autowired
     BeerOrderManager beerOrderManager;
@@ -93,7 +89,6 @@ class BeerOrderManagerImplIT {
     @BeforeEach
     void setUp() {
         testCustomer = customerRepository.save(Customer.builder().customerName("Test Customer").build());
-        log.info("WireMock server Running at {}:{}", wireMockUrl, wireMockPort);
         checkWireMockServer();
     }
 
@@ -232,6 +227,21 @@ class BeerOrderManagerImplIT {
     }
 
     private void checkWireMockServer() {
+        log.info("### WireMock server on base url {} running at url {} on port {}", wireMockServer.baseUrl(), wireMockUrl, wireMockPort);
+
+        List<StubMapping> mappings =  wireMockServer.getStubMappings();
+        Options options = wireMockServer.getOptions();
+        log.info("Wiremock options: {}", options.filesRoot().getPath());
+        log.info("Total number of stub mappings: {}", mappings.size());
+        assertEquals(1, mappings.size());
+        mappings.forEach(mapping -> {
+            log.info("### Stub Mapping: URL: {}, Method: {}, Response: Status {}, Body: {}",
+                mapping.getRequest().getUrl(),
+                mapping.getRequest().getMethod(),
+                mapping.getResponse().getStatus(),
+                mapping.getResponse().getBody());
+        });
+        
         String url = wireMockUrl + "/__admin/";
         RestTemplate restTemplate = restTemplateBuilder.build();
         HttpStatusCode statusCode = restTemplate.getForEntity(url, String.class).getStatusCode();

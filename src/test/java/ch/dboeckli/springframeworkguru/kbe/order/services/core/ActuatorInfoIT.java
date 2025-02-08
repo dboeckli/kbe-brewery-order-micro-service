@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles("it-test")
 @Slf4j
 class ActuatorInfoIT {
 
@@ -27,7 +27,7 @@ class ActuatorInfoIT {
 
     @Autowired
     private BuildProperties buildProperties;
-
+    
     @Test
     void actuatorInfoTest() throws Exception {
         MvcResult result = mockMvc.perform(get("/actuator/info"))
@@ -53,5 +53,6 @@ class ActuatorInfoIT {
 
         log.info("Response: {}", result.getResponse().getContentAsString());
     }
+
     
 }
