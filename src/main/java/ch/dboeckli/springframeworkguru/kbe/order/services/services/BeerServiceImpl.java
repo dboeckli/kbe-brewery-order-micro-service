@@ -17,6 +17,7 @@ public class BeerServiceImpl implements BeerService {
     public static final String LIST_BEER_PATH_V1 = "/api/v1/beer";
     public static final String BEER_PATH_V1 = "/api/v1/beer/";
     public static final String BEER_UPC_PATH_V1 = "/api/v1/beerUpc/";
+    
     private final RestTemplate restTemplate;
 
     private String beerServiceHost;
