@@ -14,6 +14,7 @@ services:
             - 8161:8161
             - 61616:61616
             
+  # TODO: use updated domboeckli service
     inventory-service:
         image: springframeworkguru/kbe-brewery-inventory-service
         ports:
@@ -31,11 +32,13 @@ services:
             collect_logs_with_filebeat: "true"
             decode_log_event_to_json_object: "true"
             
+    # TODO: use updated domboeckli service
     inventory-failover:
         image: springframeworkguru/kbe-brewery-inventory-failover
         ports:
             - 8083:8083
             
+  # TODO: use updated domboeckli service
     beer-service:
         image: springframeworkguru/kbe-brewery-beer-service
         ports:
