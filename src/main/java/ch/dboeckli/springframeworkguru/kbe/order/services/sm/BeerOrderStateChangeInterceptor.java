@@ -34,16 +34,25 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
 
     @Transactional
     @Override
-    public void preStateChange(State<BeerOrderStatusEnum, BeerOrderEventEnum> state, Message<BeerOrderEventEnum> message, Transition<BeerOrderStatusEnum, BeerOrderEventEnum> transition, StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine) {
-        Optional.ofNullable(message)
-                .flatMap(msg -> Optional.ofNullable((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
-                .ifPresent(orderId -> {
-            log.debug("Saving state for order id: " + orderId + " Status: " + state.getId());
+    public void preStateChange(State<BeerOrderStatusEnum,
+                               BeerOrderEventEnum> state,
+                               Message<BeerOrderEventEnum> message,
+                               Transition<BeerOrderStatusEnum,
+                               BeerOrderEventEnum> transition,
+                               StateMachine<BeerOrderStatusEnum,
+                               BeerOrderEventEnum> stateMachine,
+                               StateMachine<BeerOrderStatusEnum,
+                               BeerOrderEventEnum> rootStateMachine) {
 
-            BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
-            beerOrder.setOrderStatus(state.getId());
-            beerOrderRepository.saveAndFlush(beerOrder);
-        });
+        Optional.ofNullable(message)
+            .flatMap(msg -> Optional.ofNullable((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
+            .ifPresent(orderId -> {
+                log.info("Saving state for order id: " + orderId + " Status: " + state.getId());
+
+                BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
+                beerOrder.setOrderStatus(state.getId());
+                beerOrderRepository.saveAndFlush(beerOrder);
+            });
     }
 
 //    @Override
