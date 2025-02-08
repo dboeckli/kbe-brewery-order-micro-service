@@ -4,13 +4,21 @@ server:
 spring:
   application:
     name: kbe-brewery-order-micro-service
+    
   docker:
     compose:
-      enabled: false
+      enabled: true
+      stop:
+        command: down
+        
   jackson:
     serialization:
       write-dates-as-timestamps: false
       write-date-timestamps-as-nanoseconds: true
+      FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false 
+    default-property-inclusion: non_null  
   zipkin:
     enabled: false
   cloud:
@@ -19,6 +27,21 @@ spring:
   artemis:
     user: artemis
     password: simetraehcapa
+    
+  datasource:
+    url: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: dbpassword
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        # Show SQL  
+        show_sql: false
+        # Format SQL
+        format_sql: true  
   data:
     jpa:
       repositories:
@@ -44,6 +67,8 @@ logging:
   level:
     org.zalando.logbook: TRACE
     org.springframework.statemachine.support: error
+    org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: ERROR
+    org.springframework.web.HttpLogging: ERROR
 
 logbook:
   filter:
@@ -59,7 +84,7 @@ logbook:
       - password
   predicate:
     exclude:
-      - path: /actuator/health
+      - path: /actuator/health/**
         
 sfg:
   brewery:

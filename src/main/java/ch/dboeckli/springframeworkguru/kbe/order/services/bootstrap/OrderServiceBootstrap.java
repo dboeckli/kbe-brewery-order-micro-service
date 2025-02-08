@@ -36,11 +36,11 @@ public class OrderServiceBootstrap implements CommandLineRunner {
                     .build());
 
             log.info("##################################################################");
-            log.info("# Saved Customer Id: " + savedCustomer.getId()  + "#");
+            log.info("# Saved Customer Id: " + savedCustomer.getId());
             log.info("##################################################################");
         } else {
             log.info("##################################################################");
-            log.info("# Found Customer Id: " + customerOptional.get().getId() + "#");
+            log.info("# Found Customer Id: " + customerOptional.get().getId());
             log.info("##################################################################");
         }
 
