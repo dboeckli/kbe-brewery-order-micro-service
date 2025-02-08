@@ -24,15 +24,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 @SpringBootTest
+@ActiveProfiles("test")
 @ComponentScan(basePackages = {"guru.sfg.brewery.order.service.services", "guru.sfg.brewery.order.service.web.mappers"})
 class BeerOrderServiceImplTest extends BaseServiceTest {
 
@@ -55,8 +57,8 @@ class BeerOrderServiceImplTest extends BaseServiceTest {
     void placeOrder() {
         BeerOrderDto dto = BeerOrderDto.builder()
                 .orderStatusCallbackUrl("http://foo.com")
-                .beerOrderLines(Arrays.asList(BeerOrderLineDto
-                        .builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
+                .beerOrderLines(Collections.singletonList(BeerOrderLineDto
+                    .builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
                 .build();
 
         BeerOrderDto placedOrder = beerOrderService.placeOrder(testCustomer.getId(), dto);

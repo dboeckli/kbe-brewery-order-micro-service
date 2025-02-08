@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+    mysql:
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: dbpassword
+            MYSQL_DATABASE: beerservice
+        ports:
+          - '3306'    
+          
+    jms:
+        image: apache/activemq-artemis:2.39.0
+        ports:
+            - 8161:8161
+            - 61616:61616
+            
+  # TODO: use updated domboeckli service
+    inventory-service:
+        image: springframeworkguru/kbe-brewery-inventory-service
+        ports:
+            - 8082:8082
+        depends_on:
+            - jms
+        environment:
+            SPRING_DATASOURCE_USER: root
+            SPRING_DATASOURCE_PASSWORD: dbpassword
+            SPRING_JPA_HIBERNATE_DDL-AUTO: update
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_ARTEMIS_HOST: jms
+        restart: on-failure
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"
+            
+    # TODO: use updated domboeckli service
+    inventory-failover:
+        image: springframeworkguru/kbe-brewery-inventory-failover
+        ports:
+            - 8083:8083
+            
+  # TODO: use updated domboeckli service
+    beer-service:
+        image: springframeworkguru/kbe-brewery-beer-service
+        ports:
+            - 8080:8080
+        depends_on:
+            - inventory-service
+            - jms
+        restart: on-failure
+        environment:
+            SPRING_DATASOURCE_USER: root
+            SPRING_DATASOURCE_PASSWORD: dbpassword
+            SPRING_JPA_HIBERNATE_DDL-AUTO: update
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_ARTEMIS_HOST: jms
+            SFG_BREWERY_BEER-INVENTORY-SERVICE-HOST: http://inventory-service:8082
+        labels:
+            collect_logs_with_filebeat: "true"
+            decode_log_event_to_json_object: "true"
+
+
+
+
+
+
+
+
+
+
+
+

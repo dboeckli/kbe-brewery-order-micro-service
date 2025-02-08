@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(BeerServiceImpl.class)
+@ActiveProfiles("test")
 class BeerServiceImplTest {
 
     @Autowired
@@ -35,7 +37,7 @@ class BeerServiceImplTest {
         BeerDto dto = BeerDto.builder().id(testUUID).build();
         String jsonDto = mapper.writeValueAsString(dto);
 
-        server.expect(requestTo("http://localhost:8083/api/v1/beer/" + testUUID.toString()))
+        server.expect(requestTo("http://localhost:8083/api/v1/beer/" + testUUID))
                 .andRespond(withSuccess(jsonDto, MediaType.APPLICATION_JSON));
 
         Optional<BeerDto> beerDtoOptional = beerService.getBeerById(testUUID);
