@@ -33,6 +33,7 @@
            Please refer to the section: "Table 1. Release train Spring Boot compatibility"
          -->
         <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <spring-statemachine.version>4.0.0</spring-statemachine.version>
 
         <github.acions.build>false</github.acions.build>
         <skip.docker.publish>true</skip.docker.publish>
@@ -50,7 +51,7 @@
         
         <wiremock.version>3.4.0</wiremock.version>
 
-        <swagger-request-validator.version>2.15.1</swagger-request-validator.version>
+        <swagger-request-validator.version>2.28.2</swagger-request-validator.version>
         
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
@@ -122,6 +123,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-bom</artifactId>
+                <version>${spring-statemachine.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -144,21 +152,10 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.springframework.statemachine</groupId>
-            <artifactId>spring-statemachine-core</artifactId>
-            <version>2.1.2.RELEASE</version> <!-- ORIG VERSION IS 2.1.2.RELEASE -->
-        </dependency>
-        <!-- TODO: CHECK THIS ONE. ORIG DOES USE THE CORE DEPENDENCY -->
-        <!-- TODO: ADD VERSION TO PROPERTIES SECTION -->
-        <!-- FIXIT
         <dependency>
             <groupId>org.springframework.statemachine</groupId>
             <artifactId>spring-statemachine-starter</artifactId>
-            <version>4.0.0</version>
         </dependency>
-        -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

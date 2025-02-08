@@ -88,23 +88,14 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 } else {
                     log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: " + beerOrder.getOrderStatus().name());
                 }
-            }, () -> {
-                log.debug("Order Id Not Found");
-            });
-
-            if(!found.get()){
-                log.debug("Try via String id");
-                beerOrderRepository.findOrderUsingStringId(beerOrderId.toString()).ifPresentOrElse(beerOrder -> {
-                    found.set(true);
-                },() -> log.debug("Not found via string id"));
-            }
+            }, () -> log.debug("Order Id Not Found"));
 
             if (!found.get()) {
                 try {
                     log.debug("Sleeping for retry");
                     Thread.sleep(200);
                 } catch (Exception e) {
-                    // do nothing
+                    log.info("Did not found order {} with status {}. Retry", beerOrderId, statusEnum);
                 }
             }
         }
