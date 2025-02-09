@@ -2,8 +2,7 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
 import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerPagedList;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,15 +16,15 @@ public class BeerServiceImpl implements BeerService {
     public static final String LIST_BEER_PATH_V1 = "/api/v1/beer";
     public static final String BEER_PATH_V1 = "/api/v1/beer/";
     public static final String BEER_UPC_PATH_V1 = "/api/v1/beerUpc/";
-    
+
     private final RestTemplate restTemplate;
 
-    @Getter
-    @Setter
-    private String beerServiceHost;
+    private final String beerServiceHost;
 
-    public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+    public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder, 
+                           @Value("${sfg.brewery.beer-service-host}") String beerServiceHost) {
         this.restTemplate = restTemplateBuilder.build();
+        this.beerServiceHost = beerServiceHost;
     }
 
     @Override
