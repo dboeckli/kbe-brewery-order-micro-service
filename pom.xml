@@ -51,8 +51,7 @@
         
         <wiremock.version>3.7.0</wiremock.version>
 
-        <!-- TODO: UPGRADE ME -->
-        <swagger-request-validator.version>2.28.2</swagger-request-validator.version>
+        <swagger-request-validator.version>2.44.1</swagger-request-validator.version>
         
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
