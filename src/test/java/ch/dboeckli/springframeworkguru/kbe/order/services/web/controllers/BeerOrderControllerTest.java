@@ -149,9 +149,10 @@ class BeerOrderControllerTest {
             .andExpect(jsonPath("$.customerId", is(customerId.toString())))
             .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
             .andExpect(jsonPath("$.beerOrderLines[0].beerId", is(beerId.toString())));
+            // TODO: validation is failing here
             //.andExpect(header().string("Location", containsString("/api/v1/customers/" + customerId + "/orders/")));
-        // Removed OpenAPI validation for this specific endpoint
-        // .andExpect(openApi().isValid(OAC_SPEC));
+            // Removed OpenAPI validation for this specific endpoint
+            // .andExpect(openApi().isValid(OAC_SPEC));
 
 
         then(beerOrderService).should().placeOrder(any(UUID.class), any(BeerOrderDto.class));
