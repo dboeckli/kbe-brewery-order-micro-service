@@ -20,7 +20,6 @@ public class OrderServiceBootstrap implements CommandLineRunner {
 
     public static final String CUSTOMER_NAME = "Bird Dog Brewing";
 
-
     private final CustomerRepository customerRepository;
 
     @Override
