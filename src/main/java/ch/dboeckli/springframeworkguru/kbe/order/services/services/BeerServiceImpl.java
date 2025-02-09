@@ -2,7 +2,8 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
 import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerPagedList;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 import java.util.UUID;
 
-@ConfigurationProperties(prefix = "sfg.brewery", ignoreUnknownFields = false)
 @Service
 public class BeerServiceImpl implements BeerService {
 
@@ -20,6 +20,8 @@ public class BeerServiceImpl implements BeerService {
     
     private final RestTemplate restTemplate;
 
+    @Getter
+    @Setter
     private String beerServiceHost;
 
     public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder) {
@@ -38,11 +40,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Optional<BeerPagedList> getListofBeers() {
-        Optional<BeerPagedList> beerPagedListOptional = Optional.ofNullable(restTemplate.getForObject(beerServiceHost + LIST_BEER_PATH_V1, BeerPagedList.class));
-        return beerPagedListOptional;
-    }
-
-    public void setBeerServiceHost(String beerServiceHost) {
-        this.beerServiceHost = beerServiceHost;
+        return Optional.ofNullable(restTemplate.getForObject(beerServiceHost + LIST_BEER_PATH_V1, BeerPagedList.class));
     }
 }
