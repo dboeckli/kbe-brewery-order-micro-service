@@ -19,19 +19,24 @@ spring:
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false 
     default-property-inclusion: non_null  
+    
   zipkin:
     enabled: false
+    
   cloud:
     discovery:
       enabled: false
+      
   artemis:
     user: artemis
     password: simetraehcapa
+    broker-url: tcp://localhost:61616
     
   datasource:
     url: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: dbpassword
+    
   jpa:
     database: mysql
     hibernate:
@@ -42,6 +47,7 @@ spring:
         show_sql: false
         # Format SQL
         format_sql: true  
+        
   data:
     jpa:
       repositories:
