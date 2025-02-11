@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Created by jt on 2019-09-29.
@@ -31,7 +30,6 @@ public class OrderServiceBootstrap implements CommandLineRunner {
             //create if not found
             Customer savedCustomer = customerRepository.save(Customer.builder()
                     .customerName(CUSTOMER_NAME)
-                    .apiKey(UUID.randomUUID())
                     .build());
 
             log.info("##################################################################");

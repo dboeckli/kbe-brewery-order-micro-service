@@ -38,7 +38,7 @@ import java.util.UUID;
 public class BeerOrderLine {
 
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @UuidGenerator
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
@@ -62,7 +62,7 @@ public class BeerOrderLine {
     private BeerOrder beerOrder;
 
     @Column(length = 36, columnDefinition = "varchar(36)")
-    private UUID beerId;
+    private String beerId;
 
     private Integer orderQuantity = 0;
     private Integer quantityAllocated = 0;

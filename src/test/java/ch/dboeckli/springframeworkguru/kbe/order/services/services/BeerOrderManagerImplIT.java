@@ -221,7 +221,7 @@ class BeerOrderManagerImplIT {
     private BeerOrder createBeerOrder() {
         BeerOrder beerOrder = BeerOrder.builder().customer(testCustomer).build();
         Set<BeerOrderLine> lines = new HashSet<>();
-        lines.add(BeerOrderLine.builder().beerId(beerId).orderQuantity(1).beerOrder(beerOrder).build());
+        lines.add(BeerOrderLine.builder().beerId(beerId.toString()).orderQuantity(1).beerOrder(beerOrder).build());
         beerOrder.setBeerOrderLines(lines);
         return beerOrder;
     }
@@ -234,13 +234,11 @@ class BeerOrderManagerImplIT {
         log.info("Wiremock options: {}", options.filesRoot().getPath());
         log.info("Total number of stub mappings: {}", mappings.size());
         assertEquals(1, mappings.size());
-        mappings.forEach(mapping -> {
-            log.info("### Stub Mapping: URL: {}, Method: {}, Response: Status {}, Body: {}",
-                mapping.getRequest().getUrl(),
-                mapping.getRequest().getMethod(),
-                mapping.getResponse().getStatus(),
-                mapping.getResponse().getBody());
-        });
+        mappings.forEach(mapping -> log.info("### Stub Mapping: URL: {}, Method: {}, Response: Status {}, Body: {}",
+            mapping.getRequest().getUrl(),
+            mapping.getRequest().getMethod(),
+            mapping.getResponse().getStatus(),
+            mapping.getResponse().getBody()));
         
         String url = wireMockUrl + "/__admin/";
         RestTemplate restTemplate = restTemplateBuilder.build();

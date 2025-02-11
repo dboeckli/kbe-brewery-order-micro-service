@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMapper {
 
@@ -28,7 +29,7 @@ public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMappe
     @Override
     public BeerOrderLineDto beerOrderLineToDto(BeerOrderLine line) {
         BeerOrderLineDto orderLineDto = beerOrderLineMapper.beerOrderLineToDto(line);
-        Optional<BeerDto> beerDtoOptional = beerService.getBeerById(line.getBeerId());
+        Optional<BeerDto> beerDtoOptional = beerService.getBeerById(UUID.fromString(line.getBeerId()));
 
         beerDtoOptional.ifPresent(beerDto -> {
             orderLineDto.setBeerName(beerDto.getBeerName());
