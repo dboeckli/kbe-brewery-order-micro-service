@@ -38,7 +38,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     @Transactional
     @Override
     public BeerOrder newBeerOrder(BeerOrder beerOrder) {
-        log.debug("New Order: " + beerOrder.toString());
+        log.debug("New Order: {}", beerOrder);
 
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
         BeerOrder savedOrder = beerOrderRepository.saveAndFlush(beerOrder);

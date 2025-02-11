@@ -35,7 +35,7 @@ public class TastingRoomService {
             BeerOrder beerOrder = BeerOrder.builder().customer(customer).build();
 
             BeerOrderLine line = BeerOrderLine.builder()
-                    .beerId(beerId)
+                    .beerId(beerId.toString())
                     .beerOrder(beerOrder)
                     .orderQuantity(new Random().nextInt(5) + 1) //zero based
                     .build();
@@ -56,7 +56,8 @@ public class TastingRoomService {
         if (listOptional.isPresent()) {
             BeerPagedList beerPagedList = listOptional.get();
 
-            if (beerPagedList.getContent() != null && beerPagedList.getContent().size() > 0) {
+            beerPagedList.getContent();
+            if (beerPagedList.getContent().size() > 0) {
                 List<BeerDto> dtoList = beerPagedList.getContent();
 
                 int k = new Random().nextInt(dtoList.size());

@@ -38,7 +38,7 @@ import java.util.UUID;
 public class Customer {
 
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @UuidGenerator
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
@@ -57,6 +57,8 @@ public class Customer {
     private String customerName;
 
     @Column(length = 36, columnDefinition = "varchar(36)")
+    @UuidGenerator
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID apiKey;
 
     @OneToMany(mappedBy = "customer")

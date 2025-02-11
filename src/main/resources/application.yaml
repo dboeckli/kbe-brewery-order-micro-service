@@ -33,9 +33,11 @@ spring:
     broker-url: tcp://localhost:61616
     
   datasource:
-    url: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: dbpassword
+    hikari:
+      jdbc-url: jdbc:mysql://localhost:3306/beerservice?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=UTC
+      username: root
+      password: dbpassword
+      driver-class-name: com.mysql.cj.jdbc.Driver  
     
   jpa:
     database: mysql
