@@ -1,62 +1,124 @@
 version: '3.8'
 services:
     mysql:
-        image: mysql:5.7
+        image: mysql:5.7.41
         environment:
             MYSQL_ROOT_PASSWORD: dbpassword
             MYSQL_DATABASE: beerservice
         ports:
-          - '3306'    
+          - '3306' 
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pdbpassword" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5  
           
     jms:
         image: apache/activemq-artemis:2.39.0
         ports:
             - 8161:8161
             - 61616:61616
+        environment:
+            ARTEMIS_USER: artemis
+            ARTEMIS_PASSWORD: simetraehcapa
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
             
-  # TODO: use updated domboeckli service
+    inventory-failover:
+        container_name: inventory-failover
+        image: domboeckli/kbe-brewery-inventory-failover:0.0.1-SNAPSHOT
+        ports:
+            - 8083:8083
+    
     inventory-service:
-        image: springframeworkguru/kbe-brewery-inventory-service
+        container_name: inventory-service
+        image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
         ports:
             - 8082:8082
         depends_on:
             - jms
+            - mysql
         environment:
             SPRING_DATASOURCE_USER: root
             SPRING_DATASOURCE_PASSWORD: dbpassword
             SPRING_JPA_HIBERNATE_DDL-AUTO: update
             SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-            SPRING_ARTEMIS_HOST: jms
+            SPRING_ARTEMIS_USER: artemis
+            SPRING_ARTEMIS_PASSWORD: simetraehcapa
+            SPRING_ARTEMIS_BROKER_URL: tcp://jms:61616
         restart: on-failure
         labels:
             collect_logs_with_filebeat: "true"
             decode_log_event_to_json_object: "true"
-            
-    # TODO: use updated domboeckli service
-    inventory-failover:
-        image: springframeworkguru/kbe-brewery-inventory-failover
-        ports:
-            - 8083:8083
-            
-  # TODO: use updated domboeckli service
+    
     beer-service:
-        image: springframeworkguru/kbe-brewery-beer-service
+        container_name: beer-service
+        image: domboeckli/kbe-brewery-beer-micro-service:0.0.14-SNAPSHOT
         ports:
             - 8080:8080
         depends_on:
             - inventory-service
             - jms
+            - mysql
         restart: on-failure
         environment:
             SPRING_DATASOURCE_USER: root
             SPRING_DATASOURCE_PASSWORD: dbpassword
             SPRING_JPA_HIBERNATE_DDL-AUTO: update
             SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-            SPRING_ARTEMIS_HOST: jms
+            SPRING_ARTEMIS_USER: artemis
+            SPRING_ARTEMIS_PASSWORD: simetraehcapa
+            SPRING_ARTEMIS_BROKER_URL: tcp://jms:61616
             SFG_BREWERY_BEER-INVENTORY-SERVICE-HOST: http://inventory-service:8082
         labels:
             collect_logs_with_filebeat: "true"
             decode_log_event_to_json_object: "true"
+            
+    busybox:
+        image: busybox:1.37.0
+        container_name: busybox
+        depends_on:
+            inventory-service:
+                condition: service_started
+                required: true
+            inventory-failover:
+                condition: service_started
+                required: true
+            beer-service:
+                condition: service_started
+                required: true
+        healthcheck:
+            test: [ "CMD", "sh", "-c", "
+              echo 'Checking BusyBox readiness...' &&
+              test -f /bin/sh &&
+              wget -qO- http://beer-service:8080/actuator/health/readiness | grep -q '\"status\":\"UP\"' &&
+              wget -qO- http://inventory-service:8082/actuator/health/readiness | grep -q '\"status\":\"UP\"' &&
+              wget -qO- http://inventory-failover:8083/actuator/health/readiness | grep -q '\"status\":\"UP\"'
+            " ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        command: >
+            /bin/sh -c '
+            while true; do
+              beer_service_health=$$(wget -q -O - http://beer-service:8080/actuator/health/readiness 2>/dev/null)
+              inventory_service_health=$$(wget -q -O - http://inventory-service:8082/actuator/health/readiness 2>/dev/null)
+              inventory_failover_health=$$(wget -q -O - http://inventory-failover:8083/actuator/health/readiness 2>/dev/null)
+            
+              echo "{
+                \"timestamp\": \"$$(date -Iseconds)\",
+                \"services\": {
+                  \"beer-service\": $$beer_service_health,
+                  \"inventory-service\": $$inventory_service_health,
+                  \"inventory-failover\": $$inventory_failover_health
+                }
+              }"
+              sleep 15
+            done
+            '               
 
 
 
