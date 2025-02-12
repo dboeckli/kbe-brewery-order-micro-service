@@ -19,7 +19,7 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers;
 
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

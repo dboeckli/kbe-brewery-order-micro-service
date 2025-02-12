@@ -17,9 +17,9 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.controllers;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderPagedList;
 import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderService;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

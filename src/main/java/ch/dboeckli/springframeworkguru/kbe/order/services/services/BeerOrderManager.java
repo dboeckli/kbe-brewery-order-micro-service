@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 
 import java.util.UUID;
 

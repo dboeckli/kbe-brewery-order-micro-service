@@ -1,8 +1,8 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.listeners;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.events.AllocateBeerOrderResult;
 import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManager;
+import ch.guru.springframework.kbe.lib.events.AllocateBeerOrderResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;

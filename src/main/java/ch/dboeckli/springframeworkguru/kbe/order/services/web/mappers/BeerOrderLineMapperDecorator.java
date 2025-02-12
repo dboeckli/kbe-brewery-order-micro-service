@@ -1,9 +1,9 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderLineDto;
 import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerService;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -33,7 +33,7 @@ public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMappe
 
         beerDtoOptional.ifPresent(beerDto -> {
             orderLineDto.setBeerName(beerDto.getBeerName());
-            orderLineDto.setBeerStyle(beerDto.getBeerName());
+            orderLineDto.setBeerStyle(beerDto.getBeerStyle());
             orderLineDto.setUpc(beerDto.getUpc());
             orderLineDto.setPrice(beerDto.getPrice());
         });

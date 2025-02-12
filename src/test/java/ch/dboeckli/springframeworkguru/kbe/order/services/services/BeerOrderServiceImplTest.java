@@ -17,9 +17,9 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderLineDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;

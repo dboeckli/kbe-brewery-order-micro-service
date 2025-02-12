@@ -2,9 +2,9 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.services.testcomponen
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.events.AllocateBeerOrderResult;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers.BeerOrderMapper;
+import ch.guru.springframework.kbe.lib.events.AllocateBeerOrderResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
@@ -45,7 +45,7 @@ public class BeerOrderAllocationListener {
         boolean allocationError = false;
         boolean sendOrder = true;
         JsonNode orderId = beerOrder.get("id");
-        BeerOrder beerOrderFromDB = beerOrderRepository.getOne(UUID.fromString(orderId.asText()));
+        BeerOrder beerOrderFromDB = beerOrderRepository.getReferenceById(UUID.fromString(orderId.asText()));
 
         if(beerOrder.get("customerRef") != null && !StringUtils.isBlank(beerOrder.get("customerRef").asText())) {
             System.out.println("%%%%%%%%%%%%%%%%%%%%%%%");
