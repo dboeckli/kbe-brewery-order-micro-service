@@ -1,9 +1,9 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.CustomerPagedList;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers.CustomerMapper;
+import ch.guru.springframework.kbe.lib.dto.CustomerPagedList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

@@ -33,7 +33,7 @@ spring:
         command: down
       skip:
         in-tests: false
-      file: compose-it-test.yaml
+      file: compose-it_test.yaml
 
 sfg:
   brewery:

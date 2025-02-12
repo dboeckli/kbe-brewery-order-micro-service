@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;

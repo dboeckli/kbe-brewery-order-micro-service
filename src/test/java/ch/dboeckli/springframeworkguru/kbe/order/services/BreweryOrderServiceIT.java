@@ -7,14 +7,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @DirtiesContext
-@ActiveProfiles("test")
+@ActiveProfiles("it_test")
+@EnableWireMock
 @Slf4j
-class BreweryOrderServiceTest {
+class BreweryOrderServiceIT {
 
     @Autowired
     private ApplicationContext applicationContext;

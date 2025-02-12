@@ -1,6 +1,6 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

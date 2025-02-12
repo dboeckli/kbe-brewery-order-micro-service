@@ -17,8 +17,8 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;

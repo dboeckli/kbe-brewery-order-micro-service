@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.CustomerDto;
+import ch.guru.springframework.kbe.lib.dto.CustomerDto;
 import org.mapstruct.Mapper;
 
 /**

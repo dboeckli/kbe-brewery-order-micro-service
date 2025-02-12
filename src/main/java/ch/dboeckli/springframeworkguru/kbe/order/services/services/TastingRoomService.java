@@ -4,9 +4,9 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.bootstrap.OrderService
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerPagedList;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

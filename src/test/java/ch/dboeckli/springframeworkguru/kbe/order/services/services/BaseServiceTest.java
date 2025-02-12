@@ -21,10 +21,11 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderLineRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -64,19 +65,19 @@ public abstract class BaseServiceTest {
         testBeerGalaxy = BeerDto.builder()
             .id(uuid1)
             .beerName("Galaxy Cat")
-            .beerStyle("PALE_ALE")
+            .beerStyle(BeerStyleEnum.PALE_ALE)
             .build();
 
         testBeerJava = BeerDto.builder()
             .id(uuid2)
             .beerName("Java Jill")
-            .beerStyle("PORTER")
+            .beerStyle(BeerStyleEnum.PORTER)
             .build();
 
         testBeerMangoBob = BeerDto.builder()
             .id(uuid3)
             .beerName("Mango Bobs")
-            .beerStyle("IPA")
+            .beerStyle(BeerStyleEnum.IPA)
             .build();
 
         testCustomer = customerRepository.save(Customer

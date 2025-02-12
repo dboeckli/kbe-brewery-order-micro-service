@@ -18,10 +18,10 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderLineDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerOrderPagedList;
 import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderService;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

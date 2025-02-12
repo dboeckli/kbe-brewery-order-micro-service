@@ -5,11 +5,11 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.events.AllocationFailureEvent;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.events.AllocationFailureEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
         filesUnderDirectory = "src/test/resources/wiremock"
     )
 })
-@ActiveProfiles("it-test")
+@ActiveProfiles("it_test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
 class BeerOrderManagerImplIT {

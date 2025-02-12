@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.testcomponents;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
-import ch.dboeckli.springframeworkguru.kbe.order.services.dto.events.BeerOrderValidationResult;
+import ch.guru.springframework.kbe.lib.events.BeerOrderValidationResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
