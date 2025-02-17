@@ -60,7 +60,6 @@
         <sonar.language>java</sonar.language>
         <jacoco.version>0.8.12</jacoco.version>
 
-        <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
         <!--suppress UnresolvedMavenProperty -->
         <buildNumber>${git.commit.id.abbrev}</buildNumber>
     </properties>
@@ -512,34 +511,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!--suppress UnresolvedMavenProperty. argline is set by jacoco -->
-                            <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
-                        </configuration>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <!--suppress UnresolvedMavenProperty. argline is set by jacoco -->
+                    <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!--suppress UnresolvedMavenProperty. argline is set by jacoco -->
-                            <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
-                        </configuration>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <!--suppress UnresolvedMavenProperty. argline is set by jacoco -->
+                    <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                </configuration>
             </plugin>
 
             <!--
@@ -549,7 +533,6 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>${git-commit-id-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>
