@@ -15,7 +15,7 @@ services:
   
   jms:
     container_name: jms
-    image: apache/activemq-artemis:2.39.0
+    image: apache/activemq-artemis:2.40.0
     ports:
       - 8161:8161
       - 61616:61616
