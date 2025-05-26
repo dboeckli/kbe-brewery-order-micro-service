@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.4.6</version> <!-- upgrade to 3.5.0 postponed. does not comply with spring-cloud.version -->
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -353,9 +353,10 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+                    <!-- Consider to disable that in production environment  -->
+                    <includeTools>true</includeTools>
                     <layers>
                         <enabled>true</enabled>
-                        <includeLayerTools>true</includeLayerTools>
                     </layers>
                     <excludes>
                         <exclude>
