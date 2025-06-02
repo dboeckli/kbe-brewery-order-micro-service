@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version> <!-- upgrade to 3.5.0 postponed. does not comply with spring-cloud.version -->
+        <version>3.5.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -32,7 +32,7 @@
            Please use the following instructions: https://spring.io/projects/spring-cloud
            Please refer to the section: "Table 1. Release train Spring Boot compatibility"
          -->
-        <spring-cloud.version>2024.0.1</spring-cloud.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
         <spring-statemachine.version>4.0.0</spring-statemachine.version>
 
         <github.acions.build>false</github.acions.build>
