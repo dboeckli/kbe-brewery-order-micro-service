@@ -1,0 +1,29 @@
+apiVersion: v2
+name: @project.artifactId@
+description: A Helm chart for Spring 6 Project
+type: application
+version: @helm.chart.version@
+appVersion: @project.version@
+
+dependencies:
+  - name: kbe-brewery-beer-micro-service
+    version: "v0.0.14-SNAPSHOT"
+    repository: "oci://registry-1.docker.io/domboeckli"
+    alias: beer-service
+  - name: kbe-brewery-inventory-micro-service
+    version: "v0.0.13-SNAPSHOT"
+    repository: "oci://registry-1.docker.io/domboeckli"
+    alias: inventory-service
+  - name: kbe-brewery-inventory-failover
+    version: "v0.0.1-SNAPSHOT"
+    repository: "oci://registry-1.docker.io/domboeckli"
+    alias: inventory-failover
+  - name: mysql
+    version: @helm.chart.version@
+    repository: file://charts/mysql
+    condition: mysql.enabled
+  - name: jms
+    version: @helm.chart.version@
+    repository: file://charts/jms
+    condition: jms.enabled
+

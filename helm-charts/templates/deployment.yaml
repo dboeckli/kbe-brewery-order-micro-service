@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "application-template.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "application-template.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "application-template.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "application-template.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.mysql.serviceFQDN  }} {{ .Values.mysql.port }}; do echo "[busybox: wait-for-mysql] waiting for mysql"; sleep 2; done; echo "[busybox: wait-for-mysql] mysql is available"' ]
+        - name: wait-for-jms
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.jms.serviceFQDN  }} {{ .Values.jms.broker.port }}; do echo "[busybox: wait-for-jms] waiting for jms"; sleep 2; done; echo "[busybox: wait-for-jms] jms is available"' ]
+        - name: wait-for-inventory-service
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.inventory.serviceFQDN  }} {{ .Values.sfg.inventory.port }}; do echo "[busybox: wait-for-inventory-service] waiting for inventory service"; sleep 2; done; echo "[busybox: wait-for-inventory-service] inventory service is available"' ]
+        - name: wait-for-failover-service
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.failover.serviceFQDN  }} {{ .Values.sfg.failover.port }}; do echo "[busybox: wait-for-failover-service] waiting for failover service"; sleep 2; done; echo "[busybox: wait-for-failover-service] failover service is available"' ]
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_TIMEZONE
+              value: "{{ .Values.global.timezone }}"
+            - name: SPRING_DATASOURCE_HIKARI_JDBC_URL
+              value: jdbc:mysql://{{ .Values.mysql.serviceFQDN  }}:{{ .Values.mysql.port }}/{{ .Values.mysql.database }}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+            - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+              value: update
+            - name: SPRING_ARTEMIS_BROKER_URL
+              value: "tcp://{{ .Values.jms.serviceFQDN }}:{{ .Values.jms.broker.port }}"
+            - name: SPRING_ARTEMIS_HOST
+              value: {{ .Values.jms.serviceFQDN | quote }}
+            - name: SPRING_ARTEMIS_PORT
+              value: {{ .Values.jms.broker.port | quote }}
+            - name: SFG_BREWERY_BEER_INVENTORY_SERVICE_HOST
+              value: "http://{{ .Values.sfg.inventory.serviceFQDN }}:{{ .Values.sfg.inventory.port }}"
+          envFrom:
+            - secretRef:
+                name: {{ include "application-template.fullname" . }}-spring-secrets
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          volumeMounts:
+            - mountPath: "{{ .Values.global.timezonePath }}"
+              name: time
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: time
+          hostPath:
+            path: {{ .Values.global.timezonePath }}
+            type: ""

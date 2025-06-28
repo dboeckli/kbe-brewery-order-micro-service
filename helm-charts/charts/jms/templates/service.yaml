@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jms.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "jms.labels" . | nindent 4 }}
+    app.kubernetes.io/component: jms
+spec:
+  selector:
+    {{- include "jms.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: jms
+  ports:
+    - name: broker
+      port: {{ .Values.service.broker.port }}
+      targetPort: {{ .Values.service.broker.targetPort  }}
+      nodePort: {{ .Values.service.broker.nodePort }}
+    - name: console
+      port: {{ .Values.service.console.port }}
+      targetPort: {{ .Values.service.console.targetPort  }}
+      nodePort: {{ .Values.service.console.nodePort }}
+  type: {{ .Values.service.type }}

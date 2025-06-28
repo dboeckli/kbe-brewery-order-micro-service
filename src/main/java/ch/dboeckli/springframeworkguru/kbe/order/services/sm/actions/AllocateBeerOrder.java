@@ -30,7 +30,7 @@ public class AllocateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderE
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
-        log.debug("Sending Allocation Request...");
+        log.info("Sending Allocation Request...");
 
         BeerOrder beerOrder = context.getStateMachine().getExtendedState()
                 .get(ORDER_OBJECT_HEADER, BeerOrder.class);
@@ -40,6 +40,6 @@ public class AllocateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderE
                 .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
                 .build());
 
-        log.debug("Sent request to queue" + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue" + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
     }
 }

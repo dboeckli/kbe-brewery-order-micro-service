@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mysql.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "mysql.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "mysql.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "mysql.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4.5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_DATABASE
+              value: {{ .Values.service.database }}
+            - name: MYSQL_LOG_CONSOLE
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: {{ include "mysql.fullname" . }}-secrets
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+          ports:
+            - name: mysql
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.port }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.port }}
+      volumes:
+        - name: mysql-data
+          emptyDir: { }
+        - name: mysql-init-script
+          configMap:
+            name: {{ include "mysql.fullname" . }}-mysql-init

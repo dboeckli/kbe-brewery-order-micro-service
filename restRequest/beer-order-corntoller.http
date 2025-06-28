@@ -1,3 +1,3 @@
 ###
-GET http://localhost:8081/api/v1/customers/f76773fe-6f31-47d1-8b8b-e3d40e2b2fff/orders
+GET http://localhost:{{application-port}}/api/v1/customers/f76773fe-6f31-47d1-8b8b-e3d40e2b2fff/orders
 

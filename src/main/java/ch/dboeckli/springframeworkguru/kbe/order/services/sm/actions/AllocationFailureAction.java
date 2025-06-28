@@ -35,6 +35,6 @@ public class AllocationFailureAction implements Action<BeerOrderStatusEnum, Beer
                 .beerOrderId(beerOrder.getId())
                 .build());
 
-        log.debug("Sent request to queue " + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue " + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
     }
 }
