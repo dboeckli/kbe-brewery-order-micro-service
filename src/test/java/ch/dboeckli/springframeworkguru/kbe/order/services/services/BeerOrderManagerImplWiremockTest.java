@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("wiremock")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
-class BeerOrderManagerImplIT {
+class BeerOrderManagerImplWiremockTest {
 
     @Autowired
     ObjectMapper objectMapper;

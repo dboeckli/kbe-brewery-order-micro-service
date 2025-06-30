@@ -21,11 +21,13 @@ public class TestClassOrderer implements ClassOrderer {
             return 0;
         }
 
-        if (className.endsWith("Test")) {
+        if (className.endsWith("WiremockTest")) {
+            return 2;
+        } else if (className.endsWith("Test")) {
             return 1;
         } else if (className.endsWith("IT")) {
-            return 2;
-       } else {
+            return 3;
+        } else {
             throw new IllegalArgumentException("Test class " + className + " does not end with 'Test', 'IT'");
         }
     }
