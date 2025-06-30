@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("wiremock")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
-class BeerOrderManagerImplTest {
+class BeerOrderManagerImplIT {
 
     @Autowired
     ObjectMapper objectMapper;
@@ -95,29 +95,7 @@ class BeerOrderManagerImplTest {
 
     @Test
     void testNewToAllocate() throws JsonProcessingException {
-        BeerDto beerDtoFirst  = BeerDto.builder().id(beerIdFirst).upc("1234").build();
-        BeerDto beerDtoSecond = BeerDto.builder().id(beerIdSecond).upc("5678").build();
-
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
-        log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString());
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
-        log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString());
-
-        // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(
-            BeerDto.builder().id(beerIdFirst).upc(beerDtoFirst.getUpc()).build(),
-            BeerDto.builder().id(beerIdSecond).upc(beerDtoSecond.getUpc()).build()),
-            PageRequest.of(0, 25), 2);
-
-        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
-        log.info("#### Stub created for : " + BeerServiceImpl.LIST_BEER_PATH_V1);
-
-        // Now we are printing out all stubs:
-        log.info("### Registered stubs:");
-        wireMockServer.getStubMappings().forEach(stub ->
-            log.info("Stub: " + stub.getRequest().getUrl() + " -> " + stub.getResponse().getStatus())
-        );
-
+        createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
@@ -134,14 +112,7 @@ class BeerOrderManagerImplTest {
 
     @Test
     void testGoodOrderHappyPath() throws JsonProcessingException {
-        BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
-
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
-
-        // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(BeerDto.builder().id(beerIdFirst).upc("1234").build(), BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), PageRequest.of(0, 25), 2);
-        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
-
+        createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
@@ -164,14 +135,7 @@ class BeerOrderManagerImplTest {
 
     @Test
     void beerOrderFailedValidation() throws JsonProcessingException {
-        BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("12345").build();
-
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
-
-        // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(BeerDto.builder().id(beerIdFirst).upc("12345").build(), BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), PageRequest.of(0, 25), 2);
-        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
-
+        createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
         beerOrder.setCustomerRef("fail-validation");
 
@@ -186,7 +150,6 @@ class BeerOrderManagerImplTest {
     @Test
     void beerOrderAllocationFailed() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
-
         stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         BeerOrder orderToSave = createBeerOrder();
@@ -204,17 +167,7 @@ class BeerOrderManagerImplTest {
 
     @Test
     void pickupBeerOrder() throws JsonProcessingException {
-        BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("12345").build();
-
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
-
-        // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(
-            BeerDto.builder().id(beerIdFirst).upc("12345").build(),
-            BeerDto.builder().id(UUID.randomUUID()).upc("5678").build()), 
-            PageRequest.of(0, 25), 2);
-        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
-
+        createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
@@ -261,5 +214,30 @@ class BeerOrderManagerImplTest {
         HttpStatusCode statusCode = restTemplate.getForEntity(url, String.class).getStatusCode();
         
         assertThat(statusCode).isEqualTo(HttpStatus.OK);
+    }
+
+    private void createBeerStubs() throws JsonProcessingException {
+        BeerDto beerDtoFirst  = BeerDto.builder().id(beerIdFirst).upc("1234").build();
+        BeerDto beerDtoSecond = BeerDto.builder().id(beerIdSecond).upc("5678").build();
+
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
+        log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString());
+        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
+        log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString());
+
+        // Create a list of BeerDto object
+        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(
+            BeerDto.builder().id(beerIdFirst).upc(beerDtoFirst.getUpc()).build(),
+            BeerDto.builder().id(beerIdSecond).upc(beerDtoSecond.getUpc()).build()),
+            PageRequest.of(0, 25), 2);
+
+        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        log.info("#### Stub created for : " + BeerServiceImpl.LIST_BEER_PATH_V1);
+
+        // Now we are printing out all stubs:
+        log.info("### Registered stubs:");
+        wireMockServer.getStubMappings().forEach(stub ->
+            log.info("Stub: " + stub.getRequest().getUrl() + " -> " + stub.getResponse().getStatus())
+        );
     }
 }

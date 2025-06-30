@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableWireMock
 @ActiveProfiles("wiremock")
 @Slf4j
-class ActuatorInfoTest {
+class ActuatorInfoIT {
 
     @Autowired
     private MockMvc mockMvc;

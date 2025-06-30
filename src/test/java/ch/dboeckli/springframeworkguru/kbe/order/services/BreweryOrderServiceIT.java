@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("wiremock")
 @EnableWireMock
 @Slf4j
-public class BreweryOrderServiceTest {
+class BreweryOrderServiceIT {
 
     @Autowired
     private ApplicationContext applicationContext;
