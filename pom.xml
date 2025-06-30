@@ -36,7 +36,7 @@
            Please refer to the section: "Table 1. Release train Spring Boot compatibility"
          -->
         <spring-cloud.version>2025.0.0</spring-cloud.version>
-        <spring-statemachine.version>4.0.0</spring-statemachine.version>
+        <spring-statemachine.version>4.0.1</spring-statemachine.version>
 
         <github.acions.build>false</github.acions.build>
         <skip.docker.publish>true</skip.docker.publish>
