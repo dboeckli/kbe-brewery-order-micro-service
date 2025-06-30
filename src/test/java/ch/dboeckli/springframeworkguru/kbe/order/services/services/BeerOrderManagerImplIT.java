@@ -17,6 +17,7 @@ import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,6 +95,7 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
+    @Order(1)
     void testNewToAllocate() throws JsonProcessingException {
         createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
@@ -111,6 +113,7 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
+    @Order(2)
     void testGoodOrderHappyPath() throws JsonProcessingException {
         createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
@@ -134,7 +137,8 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
-    void beerOrderFailedValidation() throws JsonProcessingException {
+    @Order(3)
+    void testBeerOrderFailedValidation() throws JsonProcessingException {
         createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
         beerOrder.setCustomerRef("fail-validation");
@@ -148,7 +152,8 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
-    void beerOrderAllocationFailed() throws JsonProcessingException {
+    @Order(4)
+    void testBeerOrderAllocationFailed() throws JsonProcessingException {
         BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
         stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
@@ -166,7 +171,8 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
-    void pickupBeerOrder() throws JsonProcessingException {
+    @Order(5)
+    void testPickupBeerOrder() throws JsonProcessingException {
         createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
 
