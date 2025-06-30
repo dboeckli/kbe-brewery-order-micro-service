@@ -20,9 +20,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Created by jt on 2019-09-08.
- */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -38,7 +35,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     @Transactional
     @Override
     public BeerOrder newBeerOrder(BeerOrder beerOrder) {
-        log.debug("New Order: {}", beerOrder);
+        log.info("New Order: {}", beerOrder);
 
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
         BeerOrder savedOrder = beerOrderRepository.saveAndFlush(beerOrder);

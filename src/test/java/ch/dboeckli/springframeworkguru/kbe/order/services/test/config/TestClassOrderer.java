@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.test.config;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.BreweryOrderServiceIT;
 import org.junit.jupiter.api.ClassDescriptor;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.ClassOrdererContext;
@@ -9,7 +8,6 @@ import java.util.Comparator;
 
 public class TestClassOrderer implements ClassOrderer {
     private static final String THIS_PACKAGE = TestClassOrderer.class.getPackageName();
-    private static final String TEST_PACKAGE = BreweryOrderServiceIT.class.getPackageName();
 
     @Override
     public void orderClasses(ClassOrdererContext classOrdererContext) {
@@ -20,10 +18,6 @@ public class TestClassOrderer implements ClassOrderer {
         Class<?> testClass = classDescriptor.getTestClass();
         String className = classDescriptor.getDisplayName();
         if (testClass.getPackageName().equals(THIS_PACKAGE)) {
-            return 0;
-        }
-
-        if (testClass.getPackageName().startsWith(TEST_PACKAGE)) {
             return 0;
         }
 

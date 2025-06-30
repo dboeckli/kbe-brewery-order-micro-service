@@ -5,9 +5,6 @@ import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 
 import java.util.UUID;
 
-/**
- * Created by jt on 2019-09-08.
- */
 public interface BeerOrderManager {
 
     BeerOrder newBeerOrder(BeerOrder beerOrder);
