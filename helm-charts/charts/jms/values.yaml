@@ -1,0 +1,20 @@
+global:
+  namespace: kbe-brewery-order-micro-service
+
+service:
+  type: NodePort
+
+  broker:
+    port: 61616
+    nodePort: 30616
+    targetPort: 61616
+  console:
+    port: 8161
+    nodePort: 30161
+    targetPort: 8161
+
+  user: artemis
+  password: simetraehcapa
+
+ingress:
+  enabled: false

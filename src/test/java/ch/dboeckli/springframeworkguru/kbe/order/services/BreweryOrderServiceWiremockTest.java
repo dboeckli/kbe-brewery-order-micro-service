@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @DirtiesContext
-@ActiveProfiles("it_test")
+@ActiveProfiles("wiremock")
 @EnableWireMock
 @Slf4j
-class BreweryOrderServiceIT {
+class BreweryOrderServiceWiremockTest {
 
     @Autowired
     private ApplicationContext applicationContext;

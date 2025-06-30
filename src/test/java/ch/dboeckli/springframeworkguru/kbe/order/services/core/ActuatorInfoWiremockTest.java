@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnableWireMock
-@ActiveProfiles("it_test")
+@ActiveProfiles("wiremock")
 @Slf4j
-class ActuatorInfoIT {
+class ActuatorInfoWiremockTest {
 
     @Autowired
     private MockMvc mockMvc;

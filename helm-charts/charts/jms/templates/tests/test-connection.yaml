@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "jms.fullname" . }}-test-connection"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "jms.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: test-jms-connection
+      image: apache/activemq-artemis:2.41.0
+      command: [ '/bin/sh', '-c' ]
+      args:
+        - |
+          echo "### Testing Artemis JMS connection : {{ include "jms.fullname" . }}"
+          /opt/activemq-artemis/bin/artemis queue stat --url tcp://{{ include "jms.fullname" . }}:{{ .Values.service.broker.port }} --user "${ARTEMIS_USER}" --password "${ARTEMIS_PASSWORD}" --silent
+          if [ $? -eq 0 ]; then
+            echo "Successfully connected to Artemis JMS broker"
+          else
+            echo "Failed to connect to Artemis JMS broker"
+          fi
+          echo "Exit code: $?"
+
+      envFrom:
+        - secretRef:
+            name: {{ include "jms.fullname" . }}-secrets
+  restartPolicy: Never

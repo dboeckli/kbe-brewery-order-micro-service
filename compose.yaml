@@ -33,15 +33,24 @@ services:
     image: domboeckli/kbe-brewery-inventory-failover:0.0.1-SNAPSHOT
     ports:
       - 8083:8083
-  
+    depends_on:
+      mysql:
+        condition: service_healthy
+      jms:
+        condition: service_healthy
+
   inventory-service:
     container_name: inventory-service
     image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
     ports:
       - 8082:8082
     depends_on:
-      - jms
-      - mysql
+      inventory-failover:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      jms:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_HIKARI_JDBC_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&serverTimezone=UTC
       SPRING_DATASOURCE_HIKARI_USERNAME: root
@@ -63,9 +72,13 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - inventory-service
-      - jms
-      - mysql
+      inventory-service:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      jms:
+        condition: service_healthy
+
     restart: on-failure
     environment:
       SPRING_DATASOURCE_HIKARI_JDBC_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&serverTimezone=UTC

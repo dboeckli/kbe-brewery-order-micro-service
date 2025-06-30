@@ -1,0 +1,16 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/api/v1/beer/89a941d7-5c3f-4a6e-be49-aa7ce9a4d635"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "id": "89a941d7-5c3f-4a6e-be49-aa7ce9a4d635",
+            "upc": "8888"
+        }
+    }
+}

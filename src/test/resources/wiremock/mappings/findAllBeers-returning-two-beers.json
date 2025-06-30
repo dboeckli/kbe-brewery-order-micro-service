@@ -1,0 +1,49 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/api/v1/beer"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "content": [
+                {
+                    "id": "f25b307d-9ae6-4e07-8b71-3b4552e30ce1",
+                    "upc": "7777"
+                },
+                {
+                    "id": "89a941d7-5c3f-4a6e-be49-aa7ce9a4d635",
+                    "upc": "8888"
+                }
+            ],
+            "pageable": {
+                "sort": {
+                    "empty": true,
+                    "sorted": false,
+                    "unsorted": true
+                },
+                "offset": 0,
+                "pageNumber": 0,
+                "pageSize": 25,
+                "paged": true,
+                "unpaged": false
+            },
+            "totalElements": 2,
+            "last": true,
+            "totalPages": 1,
+            "size": 25,
+            "number": 0,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "first": true,
+            "numberOfElements": 2,
+            "empty": false
+        }
+    }
+}

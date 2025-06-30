@@ -33,7 +33,7 @@ spring:
         command: down
       skip:
         in-tests: false
-      file: compose-it_test.yaml
+      file: compose-wiremock.yaml
 
 sfg:
   brewery:

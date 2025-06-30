@@ -24,12 +24,11 @@ public class BeerOrderValidationListener {
     private final ObjectMapper objectMapper;
 
     @JmsListener(destination = JmsConfig.VALIDATE_ORDER_QUEUE)
-    public void listen(Message msg) throws IOException, JMSException {
-
+    public void listen(Message message) throws IOException, JMSException {
+        log.info("Beer Order Validation Mock received request: {}", message);
       //  await().atLeast(1L, TimeUnit.SECONDS).until(() -> true);
 
-        String jsonString = msg.getBody(String.class);
-
+        String jsonString = message.getBody(String.class);
         JsonNode event = objectMapper.readTree(jsonString);
         log.debug("Beer Order Validation Mock received request");
 

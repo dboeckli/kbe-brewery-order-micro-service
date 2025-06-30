@@ -1,0 +1,122 @@
+global:
+  timezone: Europe/Zurich
+  timezonePath: /etc/localtime
+  springDebug: false
+  namespace: kbe-brewery-order-micro-service
+
+replicaCount: 1
+
+image:
+  repository: @docker.repo@/@project.artifactId@
+  tag: @project.version@
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30080
+
+externalAccess:
+  host: "localhost"
+  protocol: "http"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+spring:
+  profiles:
+    active: mysql
+  oauth2ResourceServer:
+    issuerUri: ""
+
+probes:
+  startup:
+    failureThreshold: 30
+    periodSeconds: 10
+  readiness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+  liveness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+mysql:
+  enabled: true
+
+  database: beerservice
+
+  port: 3306
+  targetPort: 3306
+  nodePort: 30306
+
+  user: user
+  password: dbpassword
+
+  rootPassword: dbpassword
+
+  serviceFQDN: "kbe-brewery-order-micro-service-mysql.kbe-brewery-order-micro-service.svc.cluster.local"
+
+jms:
+  enabled: true
+
+  broker:
+    port: 61616
+    nodePort: 30616
+  console:
+    port: 8161
+    nodePort: 30161
+
+  user: artemis
+  password: simetraehcapa
+
+  serviceFQDN: "kbe-brewery-order-micro-service-jms.kbe-brewery-order-micro-service.svc.cluster.local"
+
+sfg:
+  beerService:
+    serviceFQDN: "kbe-brewery-order-micro-service-beer-service.kbe-brewery-order-micro-service.svc.cluster.local"
+    port: 8080
+  inventory:
+    serviceFQDN: "kbe-brewery-order-micro-service-inventory-service.kbe-brewery-order-micro-service.svc.cluster.local"
+    port: 8082
+  failover:
+    serviceFQDN: "kbe-brewery-order-micro-service-inventory-failover.kbe-brewery-order-micro-service.svc.cluster.local"
+    port: 8083
+
+ingress:
+  enabled: false
+
+# Section for overriding values in subcharts.
+
+# this is the alias for kbe-brewery-inventory-micro-service. override does not work with the name of the service
+inventory-service:
+  jms:
+    enabled: false
+    serviceFQDN: "kbe-brewery-order-micro-service-jms.kbe-brewery-order-micro-service.svc.cluster.local"
+  mysql:
+    enabled: false
+    serviceFQDN: "kbe-brewery-order-micro-service-mysql.kbe-brewery-order-micro-service.svc.cluster.local"
+  
+beer-service:
+  jms:
+    enabled: false
+    serviceFQDN: "kbe-brewery-order-micro-service-jms.kbe-brewery-order-micro-service.svc.cluster.local"
+  mysql:
+    enabled: false
+    serviceFQDN: "kbe-brewery-order-micro-service-mysql.kbe-brewery-order-micro-service.svc.cluster.local"
+  sfg:
+    inventory:
+      serviceFQDN: "kbe-brewery-order-micro-service-inventory-service.kbe-brewery-order-micro-service.svc.cluster.local"
+      port: 8082
+    failover:
+      serviceFQDN: "kbe-brewery-order-micro-service-inventory-failover.kbe-brewery-order-micro-service.svc.cluster.local"
+      port: 8083  
+
+
+

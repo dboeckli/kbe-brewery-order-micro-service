@@ -33,6 +33,6 @@ public class DeallocateOrder implements Action<BeerOrderStatusEnum, BeerOrderEve
                 .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
                 .build());
 
-        log.debug("Sent request to queue" + JmsConfig.DEALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue" + JmsConfig.DEALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
     }
 }

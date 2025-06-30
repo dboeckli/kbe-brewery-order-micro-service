@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jms.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "jms.labels" . | nindent 4 }}
+    app.kubernetes.io/component: jms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "jms.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: jms
+  template:
+    metadata:
+      labels:
+        {{- include "jms.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: jms
+    spec:
+      containers:
+        - name: jms
+          image: apache/activemq-artemis:2.41.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: {{ include "jms.fullname" . }}-secrets
+          ports:
+            - name: broker
+              containerPort: {{ .Values.service.broker.targetPort }}
+              protocol: TCP
+            - name: console
+              containerPort: {{ .Values.service.console.targetPort }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.broker.targetPort  }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.broker.targetPort  }}
