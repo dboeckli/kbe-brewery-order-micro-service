@@ -28,6 +28,10 @@ spec:
         - name: wait-for-failover-service
           image: busybox:1.37.0
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.failover.serviceFQDN  }} {{ .Values.sfg.failover.port }}; do echo "[busybox: wait-for-failover-service] waiting for failover service"; sleep 2; done; echo "[busybox: wait-for-failover-service] failover service is available"' ]
+        - name: wait-for-beer-service
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.beerService.serviceFQDN  }} {{ .Values.sfg.beerService.port }}; do echo "[busybox: wait-for-beer-service] waiting for beer service"; sleep 2; done; echo "[busybox: wait-for-beer-service] beer service is available"' ]
+
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -45,8 +49,8 @@ spec:
               value: {{ .Values.jms.serviceFQDN | quote }}
             - name: SPRING_ARTEMIS_PORT
               value: {{ .Values.jms.broker.port | quote }}
-            - name: SFG_BREWERY_BEER_INVENTORY_SERVICE_HOST
-              value: "http://{{ .Values.sfg.inventory.serviceFQDN }}:{{ .Values.sfg.inventory.port }}"
+            - name: SFG_BREWERY_BEER_SERVICE_HOST
+              value: "http://{{ .Values.sfg.beerService.serviceFQDN }}:{{ .Values.sfg.beerService.port }}"
           envFrom:
             - secretRef:
                 name: {{ include "application-template.fullname" . }}-spring-secrets
