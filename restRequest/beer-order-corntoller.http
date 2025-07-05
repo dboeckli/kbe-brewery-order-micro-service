@@ -1,3 +1,8 @@
 ###
+GET http://localhost:{{application-port}}/api/v1/customers/?
+    pageNumber={{$random.integer(100)}}&
+    pageSize={{$random.integer(100)}}
+
+###
 GET http://localhost:{{application-port}}/api/v1/customers/f76773fe-6f31-47d1-8b8b-e3d40e2b2fff/orders
 

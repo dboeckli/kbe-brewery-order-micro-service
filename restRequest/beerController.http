@@ -1,0 +1,3 @@
+### get beers
+GET http://localhost:{{beer-service-port}}/api/v1/beer
+Accept: application/json

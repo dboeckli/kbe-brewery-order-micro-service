@@ -1,0 +1,3 @@
+###
+GET http://localhost:{{beer-service-port}}/inventory-failover
+Accept: application/json
