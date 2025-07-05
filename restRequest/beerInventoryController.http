@@ -1,0 +1,4 @@
+###
+GET http://localhost:{{inventroy-service-port}}/api/v1/beer/f2a2e277-598f-4bec-b6ee-17e098b88d4/inventory
+Authorization: Basic good beer
+
