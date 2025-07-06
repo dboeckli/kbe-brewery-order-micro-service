@@ -81,9 +81,9 @@ jms:
 beerService:
   enabled: true
 inventoryService:
-  enable: true
+  enabled: true
 inventoryFailover:
-  enable: true
+  enabled: true
 
 sfg:
   beerService:
