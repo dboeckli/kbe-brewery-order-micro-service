@@ -17,25 +17,30 @@ spec:
     spec:
       initContainers:
         - name: wait-for-mysql
-          image: busybox:1.37.0
+          image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
+          imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ .Values.mysql.serviceFQDN  }} {{ .Values.mysql.port }}; do echo "[busybox: wait-for-mysql] waiting for mysql"; sleep 2; done; echo "[busybox: wait-for-mysql] mysql is available"' ]
         - name: wait-for-jms
-          image: busybox:1.37.0
+          image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
+          imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ .Values.jms.serviceFQDN  }} {{ .Values.jms.broker.port }}; do echo "[busybox: wait-for-jms] waiting for jms"; sleep 2; done; echo "[busybox: wait-for-jms] jms is available"' ]
         - name: wait-for-inventory-service
-          image: busybox:1.37.0
+          image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
+          imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.inventory.serviceFQDN  }} {{ .Values.sfg.inventory.port }}; do echo "[busybox: wait-for-inventory-service] waiting for inventory service"; sleep 2; done; echo "[busybox: wait-for-inventory-service] inventory service is available"' ]
         - name: wait-for-failover-service
-          image: busybox:1.37.0
+          image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
+          imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.failover.serviceFQDN  }} {{ .Values.sfg.failover.port }}; do echo "[busybox: wait-for-failover-service] waiting for failover service"; sleep 2; done; echo "[busybox: wait-for-failover-service] failover service is available"' ]
         - name: wait-for-beer-service
-          image: busybox:1.37.0
+          image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
+          imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.beerService.serviceFQDN  }} {{ .Values.sfg.beerService.port }}; do echo "[busybox: wait-for-beer-service] waiting for beer service"; sleep 2; done; echo "[busybox: wait-for-beer-service] beer service is available"' ]
 
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: IfNotPresent
+          image: "{{ .Values.image.registry }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"

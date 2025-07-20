@@ -10,7 +10,8 @@ metadata:
 spec:
   containers:
     - name: test-jms-connection
-      image: apache/activemq-artemis:2.41.0
+      image: {{.Values.activemqArtemisImage.repository }}:{{.Values.activemqArtemisImage.tag }}
+      imagePullPolicy: {{.Values.activemqArtemisImage.pullPolicy }}
       command: [ '/bin/sh', '-c' ]
       args:
         - |

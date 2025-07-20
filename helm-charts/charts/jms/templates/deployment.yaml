@@ -20,8 +20,8 @@ spec:
     spec:
       containers:
         - name: jms
-          image: apache/activemq-artemis:2.41.0
-          imagePullPolicy: IfNotPresent
+          image: {{.Values.activemqArtemisImage.repository }}:{{.Values.activemqArtemisImage.tag }}
+          imagePullPolicy: {{.Values.activemqArtemisImage.pullPolicy }}
           envFrom:
             - secretRef:
                 name: {{ include "jms.fullname" . }}-secrets

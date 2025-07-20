@@ -20,8 +20,8 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:8.4.5
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.mysqlImage.repository }}:{{ .Values.mysqlImage.tag }}
+          imagePullPolicy: {{ .Values.mysqlImage.pullPolicy }}
           env:
             - name: MYSQL_DATABASE
               value: {{ .Values.service.database }}

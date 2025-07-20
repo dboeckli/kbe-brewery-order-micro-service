@@ -17,3 +17,8 @@ service:
 
 ingress:
   enabled: false
+
+mysqlImage:
+  repository: mysql
+  tag: "8.4.5"
+  pullPolicy: IfNotPresent
