@@ -25,8 +25,10 @@ public class TestClassOrderer implements ClassOrderer {
             return 2;
         } else if (className.endsWith("Test")) {
             return 1;
-        } else if (className.endsWith("IT")) {
+        } else if (className.endsWith("BreweryOrderServiceIT")) {
             return 3;
+        } else if (className.endsWith("IT")) {
+            return 4;
         } else {
             throw new IllegalArgumentException("Test class " + className + " does not end with 'Test', 'IT'");
         }
