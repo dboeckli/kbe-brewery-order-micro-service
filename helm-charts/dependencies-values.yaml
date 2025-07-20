@@ -1,0 +1,5 @@
+# this YAML is merged into the chart file and deleted before using helm and deleted afterward in the target directory
+busyboxImage:
+  repository: busybox
+  tag: "1.37.0"
+  pullPolicy: IfNotPresent

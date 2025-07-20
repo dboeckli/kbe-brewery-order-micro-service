@@ -18,3 +18,8 @@ service:
 
 ingress:
   enabled: false
+
+activemqArtemisImage:
+  repository: apache/activemq-artemis
+  tag: "2.41.0"
+  pullPolicy: IfNotPresent

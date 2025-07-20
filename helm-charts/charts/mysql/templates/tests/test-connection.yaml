@@ -10,7 +10,8 @@ metadata:
 spec:
   containers:
     - name: test-mysql-connection
-      image: mysql:8.4.5
+      image: {{ .Values.mysqlImage.repository }}:{{ .Values.mysqlImage.tag }}
+      imagePullPolicy: {{ .Values.mysqlImage.pullPolicy }}
       command: [ '/bin/sh', '-c' ]
       args:
         - |
