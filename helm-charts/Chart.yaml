@@ -8,11 +8,14 @@ version: @helm.chart.version@
 appVersion: @project.version@
 
 dependencies:
-  - name: mysql
+  - name: kbe-brewery-order-micro-service-mysql
+    alias: mysql
     version: @helm.chart.version@
     repository: file://charts/mysql
     condition: mysql.enabled
-  - name: jms
+
+  - name: kbe-brewery-order-micro-service-jms
+    alias: jms
     version: @helm.chart.version@
     repository: file://charts/jms
     condition: jms.enabled
