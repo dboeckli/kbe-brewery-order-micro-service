@@ -39,7 +39,7 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry }}/@project.artifactId@:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: JAVA_TIMEZONE
