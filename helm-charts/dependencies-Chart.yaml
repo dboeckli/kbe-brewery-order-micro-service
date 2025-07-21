@@ -8,19 +8,19 @@ appVersion: 0.0.1
 
 dependencies:
   - name: kbe-brewery-beer-micro-service
+    alias: beer-service
     version: "v0.0.14-SNAPSHOT"
     repository: "oci://registry-1.docker.io/domboeckli"
-    alias: beer-service
     condition: beerService.enabled
 
   - name: kbe-brewery-inventory-micro-service
+    alias: inventory-service
     version: "v0.0.13-SNAPSHOT"
     repository: "oci://registry-1.docker.io/domboeckli"
-    alias: inventory-service
     condition: inventoryService.enabled
 
   - name: kbe-brewery-inventory-failover
-    version: "v0.0.1-SNAPSHOT"
-    repository: "oci://registry-1.docker.io/domboeckli"
     alias: inventory-failover
+    version: "v0.0.2-SNAPSHOT"
+    repository: "oci://registry-1.docker.io/domboeckli"
     condition: inventoryFailover.enabled
