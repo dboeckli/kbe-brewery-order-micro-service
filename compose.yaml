@@ -30,7 +30,7 @@ services:
   
   inventory-failover:
     container_name: inventory-failover
-    image: domboeckli/kbe-brewery-inventory-failover:0.0.1-SNAPSHOT
+    image: domboeckli/kbe-brewery-inventory-failover:0.0.2-SNAPSHOT
     ports:
       - 8083:8083
     depends_on:
