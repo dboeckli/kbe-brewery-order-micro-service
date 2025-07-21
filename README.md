@@ -1,6 +1,6 @@
 # SFG Beer Works - Brewery Microservices
 
-This project has a services of microservices for deployment via Docker Compose and Kubernetes and is one element of the KBE.
+This project has a services of microservices for deployment via Docker Compose and Kubernetes and is one element of the KBE
 See Gateway Project for Detailed description:
 https://github.com/dboeckli/kbe-brewery-gateway/blob/master/README.md
 
