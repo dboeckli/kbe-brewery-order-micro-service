@@ -52,7 +52,7 @@
         <docker.repo>local</docker.repo>
 
         <!-- our dependencies -->
-        <kbe-brewery-lib.version>0.0.2-SNAPSHOT</kbe-brewery-lib.version>
+        <kbe-brewery-lib.version>0.0.3</kbe-brewery-lib.version>
 
         <logbook.version>3.12.3</logbook.version>
         <logstash-logback.version>9.0</logstash-logback.version>
