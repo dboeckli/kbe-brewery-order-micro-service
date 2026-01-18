@@ -16,9 +16,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.restclient.RestTemplateBuilder;
@@ -55,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("wiremock")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BeerOrderManagerImplWiremockTest {
 
     @Autowired
@@ -146,7 +145,7 @@ class BeerOrderManagerImplWiremockTest {
     @Order(4)
     void testBeerOrderAllocationFailed() {
         BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         BeerOrder orderToSave = createBeerOrder();
         orderToSave.setCustomerRef("allocation-fail");
@@ -217,9 +216,9 @@ class BeerOrderManagerImplWiremockTest {
         BeerDto beerDtoFirst = BeerDto.builder().id(beerIdFirst).upc("1234").build();
         BeerDto beerDtoSecond = BeerDto.builder().id(beerIdSecond).upc("5678").build();
 
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
         log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString());
-        stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
         log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString());
 
         // Create a list of BeerDto object
@@ -228,7 +227,7 @@ class BeerOrderManagerImplWiremockTest {
             BeerDto.builder().id(beerIdSecond).upc(beerDtoSecond.getUpc()).build()),
             PageRequest.of(0, 25), 2);
 
-        stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
         log.info("#### Stub created for : " + BeerServiceImpl.LIST_BEER_PATH_V1);
 
         // Now we are printing out all stubs:
