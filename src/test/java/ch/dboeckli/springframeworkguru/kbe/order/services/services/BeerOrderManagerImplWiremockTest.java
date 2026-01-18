@@ -94,7 +94,7 @@ class BeerOrderManagerImplWiremockTest {
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
         AtomicReference<BeerOrder> foundBeerOrderRef = new AtomicReference<>();
         await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            BeerOrder foundOrder = beerOrderRepository.findById(savedOrder.getId()).get();
             foundBeerOrderRef.set(foundOrder);
             assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
@@ -112,7 +112,7 @@ class BeerOrderManagerImplWiremockTest {
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
         AtomicReference<BeerOrder> foundBeerOrderRef = new AtomicReference<>();
         await().untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            BeerOrder foundOrder = beerOrderRepository.findById(savedOrder.getId()).get();
             foundBeerOrderRef.set(foundOrder);
             assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
@@ -122,7 +122,7 @@ class BeerOrderManagerImplWiremockTest {
         //pickup order
         beerOrderManager.pickupBeerOrder(foundOrder.getId());
         await().untilAsserted(() -> {
-            BeerOrder orderCheck = beerOrderRepository.getReferenceById(savedOrder.getId());
+            BeerOrder orderCheck = beerOrderRepository.findById(savedOrder.getId()).get();
             assertEquals(BeerOrderStatusEnum.PICKED_UP, orderCheck.getOrderStatus());
         });
     }
@@ -153,7 +153,7 @@ class BeerOrderManagerImplWiremockTest {
 
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
         await().untilAsserted(() -> {
-            BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
+            BeerOrder foundOrder = beerOrderRepository.findById(savedOrder.getId()).get();
             assertEquals(BeerOrderStatusEnum.ALLOCATION_ERROR, foundOrder.getOrderStatus());
         });
 

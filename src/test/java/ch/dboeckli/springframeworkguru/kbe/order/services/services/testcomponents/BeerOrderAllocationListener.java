@@ -38,7 +38,7 @@ public class BeerOrderAllocationListener {
         boolean allocationError = false;
         boolean sendOrder = true;
         JsonNode orderId = beerOrder.get("id");
-        BeerOrder beerOrderFromDB = beerOrderRepository.getReferenceById(UUID.fromString(orderId.asString()));
+        BeerOrder beerOrderFromDB = beerOrderRepository.findById(UUID.fromString(orderId.asString())).get();
 
         if (beerOrder.get("customerRef") != null && !StringUtils.isBlank(beerOrder.get("customerRef").asString())) {
             log.info("########################################");

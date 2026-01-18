@@ -51,17 +51,22 @@ public class BeerOrder {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
+
     private String customerRef;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude
     private Customer customer;
+
     @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude
     private Set<BeerOrderLine> beerOrderLines;
+
     @Enumerated(EnumType.STRING)
     private BeerOrderStatusEnum orderStatus = BeerOrderStatusEnum.NEW;
+
     private String orderStatusCallbackUrl;
 
     public boolean isNew() {
