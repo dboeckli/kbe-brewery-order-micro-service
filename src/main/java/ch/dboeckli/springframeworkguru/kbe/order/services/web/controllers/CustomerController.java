@@ -1,6 +1,6 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.controllers;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.CustomerService;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.customer.CustomerService;
 import ch.guru.springframework.kbe.lib.dto.CustomerPagedList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +26,9 @@ public class CustomerController {
 
     @GetMapping
     public CustomerPagedList listCustomers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize){
+                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
-        if (pageNumber == null || pageNumber < 0){
+        if (pageNumber == null || pageNumber < 0) {
             pageNumber = DEFAULT_PAGE_NUMBER;
         }
 

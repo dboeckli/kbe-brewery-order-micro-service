@@ -17,6 +17,7 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beer.BeerService;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
@@ -56,10 +57,10 @@ class BeerOrderServiceImplTest extends BaseServiceTest {
     @Test
     void placeOrder() {
         BeerOrderDto dto = BeerOrderDto.builder()
-                .orderStatusCallbackUrl("http://foo.com")
-                .beerOrderLines(Collections.singletonList(BeerOrderLineDto
-                    .builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
-                .build();
+            .orderStatusCallbackUrl("http://foo.com")
+            .beerOrderLines(Collections.singletonList(BeerOrderLineDto
+                .builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
+            .build();
 
         BeerOrderDto placedOrder = beerOrderService.placeOrder(testCustomer.getId(), dto);
 

@@ -7,30 +7,19 @@ import org.junit.jupiter.api.ClassOrdererContext;
 import java.util.Comparator;
 
 public class TestClassOrderer implements ClassOrderer {
-    private static final String THIS_PACKAGE = TestClassOrderer.class.getPackageName();
+    private static int getOrder(ClassDescriptor classDescriptor) {
+        String className = classDescriptor.getTestClass().getSimpleName();
+        return switch (className) {
+            case String name when name.endsWith("BreweryOrderServiceIT") -> 3;
+            case String name when name.endsWith("IT") -> 4;
+            case String name when name.endsWith("WiremockTest") -> 2;
+            case String name when name.endsWith("Test") || name.endsWith("Tests") -> 1;
+            default -> Integer.MAX_VALUE;
+        };
+    }
 
     @Override
     public void orderClasses(ClassOrdererContext classOrdererContext) {
-        classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(TestClassOrderer::getOrder));
-    }
-
-    private static int getOrder(ClassDescriptor classDescriptor) {
-        Class<?> testClass = classDescriptor.getTestClass();
-        String className = classDescriptor.getDisplayName();
-        if (testClass.getPackageName().equals(THIS_PACKAGE)) {
-            return 0;
-        }
-
-        if (className.endsWith("WiremockTest")) {
-            return 2;
-        } else if (className.endsWith("Test")) {
-            return 1;
-        } else if (className.endsWith("BreweryOrderServiceIT")) {
-            return 3;
-        } else if (className.endsWith("IT")) {
-            return 4;
-        } else {
-            throw new IllegalArgumentException("Test class " + className + " does not end with 'Test', 'IT'");
-        }
+        classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(ch.dboeckli.springframeworkguru.kbe.order.services.test.config.TestClassOrderer::getOrder));
     }
 }

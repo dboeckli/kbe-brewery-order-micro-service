@@ -7,11 +7,11 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatus
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beer.BeerServiceImpl;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManager;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import ch.guru.springframework.kbe.lib.events.AllocationFailureEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -33,6 +33,7 @@ import org.springframework.web.client.RestTemplate;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -58,35 +59,25 @@ class BeerOrderManagerImplWiremockTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
-
-    @Value("${wiremock.server.baseUrl}")
-    private String wireMockUrl;
-
-    @Value("${wiremock.server.port}")
-    private String wireMockPort;
-
     @InjectWireMock
     WireMockServer wireMockServer;
-
     @Autowired
     BeerOrderManager beerOrderManager;
-
     @Autowired
     BeerOrderRepository beerOrderRepository;
-
     @Autowired
     CustomerRepository customerRepository;
-
     @Autowired
     JmsTemplate jmsTemplate;
-
     Customer testCustomer;
-
     UUID beerIdFirst = UUID.randomUUID();
     UUID beerIdSecond = UUID.randomUUID();
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
+    @Value("${wiremock.server.baseUrl}")
+    private String wireMockUrl;
+    @Value("${wiremock.server.port}")
+    private String wireMockPort;
 
     @BeforeEach
     void setUp() {
@@ -96,7 +87,7 @@ class BeerOrderManagerImplWiremockTest {
 
     @Test
     @Order(1)
-    void testNewToAllocate() throws JsonProcessingException {
+    void testNewToAllocate() {
         createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
 
@@ -114,7 +105,7 @@ class BeerOrderManagerImplWiremockTest {
 
     @Test
     @Order(2)
-    void testGoodOrderHappyPath() throws JsonProcessingException {
+    void testGoodOrderHappyPath() {
         createBeerStubs();
         BeerOrder orderToSave = createBeerOrder();
 
@@ -123,22 +114,22 @@ class BeerOrderManagerImplWiremockTest {
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
             foundBeerOrderRef.set(foundOrder);
-            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus()); 
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
         BeerOrder foundOrder = foundBeerOrderRef.get();
         assertNotNull(foundOrder);
-        
+
         //pickup order
         beerOrderManager.pickupBeerOrder(foundOrder.getId());
         await().untilAsserted(() -> {
             BeerOrder orderCheck = beerOrderRepository.getReferenceById(savedOrder.getId());
-            assertEquals(BeerOrderStatusEnum.PICKED_UP, orderCheck.getOrderStatus()); 
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, orderCheck.getOrderStatus());
         });
     }
 
     @Test
     @Order(3)
-    void testBeerOrderFailedValidation() throws JsonProcessingException {
+    void testBeerOrderFailedValidation() {
         createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
         beerOrder.setCustomerRef("fail-validation");
@@ -147,13 +138,13 @@ class BeerOrderManagerImplWiremockTest {
 
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION, foundOrder.getOrderStatus());  
+            assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION, foundOrder.getOrderStatus());
         });
     }
 
     @Test
     @Order(4)
-    void testBeerOrderAllocationFailed() throws JsonProcessingException {
+    void testBeerOrderAllocationFailed() {
         BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
         stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
@@ -163,7 +154,7 @@ class BeerOrderManagerImplWiremockTest {
         BeerOrder savedOrder = beerOrderManager.newBeerOrder(orderToSave);
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.getReferenceById(savedOrder.getId());
-            assertEquals(BeerOrderStatusEnum.ALLOCATION_ERROR, foundOrder.getOrderStatus()); 
+            assertEquals(BeerOrderStatusEnum.ALLOCATION_ERROR, foundOrder.getOrderStatus());
         });
 
         AllocationFailureEvent event = (AllocationFailureEvent) jmsTemplate.receiveAndConvert(JmsConfig.ALLOCATION_FAILURE_QUEUE);
@@ -172,7 +163,7 @@ class BeerOrderManagerImplWiremockTest {
 
     @Test
     @Order(5)
-    void testPickupBeerOrder() throws JsonProcessingException {
+    void testPickupBeerOrder() {
         createBeerStubs();
         BeerOrder beerOrder = createBeerOrder();
 
@@ -180,17 +171,17 @@ class BeerOrderManagerImplWiremockTest {
 
         await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());  
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
 
         beerOrderManager.pickupBeerOrder(savedBeerOrder.getId());
 
         await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatus()); 
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatus());
         });
         BeerOrder pickedUpOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
-        assertEquals(BeerOrderStatusEnum.PICKED_UP, pickedUpOrder.getOrderStatus()); 
+        assertEquals(BeerOrderStatusEnum.PICKED_UP, pickedUpOrder.getOrderStatus());
     }
 
     private BeerOrder createBeerOrder() {
@@ -204,7 +195,7 @@ class BeerOrderManagerImplWiremockTest {
     private void checkWireMockServer() {
         log.info("### WireMock server on base url {} running at url {} on port {}", wireMockServer.baseUrl(), wireMockUrl, wireMockPort);
 
-        List<StubMapping> mappings =  wireMockServer.getStubMappings();
+        List<StubMapping> mappings = wireMockServer.getStubMappings();
         Options options = wireMockServer.getOptions();
         log.info("Wiremock options: {}", options.filesRoot().getPath());
         log.info("Total number of stub mappings: {}", mappings.size());
@@ -214,16 +205,16 @@ class BeerOrderManagerImplWiremockTest {
             mapping.getRequest().getMethod(),
             mapping.getResponse().getStatus(),
             mapping.getResponse().getBody()));
-        
+
         String url = wireMockUrl + "/__admin/";
         RestTemplate restTemplate = restTemplateBuilder.build();
         HttpStatusCode statusCode = restTemplate.getForEntity(url, String.class).getStatusCode();
-        
+
         assertThat(statusCode).isEqualTo(HttpStatus.OK);
     }
 
-    private void createBeerStubs() throws JsonProcessingException {
-        BeerDto beerDtoFirst  = BeerDto.builder().id(beerIdFirst).upc("1234").build();
+    private void createBeerStubs() {
+        BeerDto beerDtoFirst = BeerDto.builder().id(beerIdFirst).upc("1234").build();
         BeerDto beerDtoSecond = BeerDto.builder().id(beerIdSecond).upc("5678").build();
 
         stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));

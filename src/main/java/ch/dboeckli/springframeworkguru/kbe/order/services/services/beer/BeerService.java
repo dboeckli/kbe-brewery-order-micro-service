@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beer;
 
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;

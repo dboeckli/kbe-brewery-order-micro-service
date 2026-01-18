@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.listeners;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManager;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManager;
 import ch.guru.springframework.kbe.lib.events.AllocateBeerOrderResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ public class BeerOrderAllocationResultListener {
     @JmsListener(destination = JmsConfig.ALLOCATE_ORDER_RESULT_QUEUE)
     public void listen(AllocateBeerOrderResult result) {
 
-        if(!result.getAllocationError() && !result.getPendingInventory()){
+        if (!result.getAllocationError() && !result.getPendingInventory()) {
             //allocated normally
             beerOrderManager.beerOrderAllocationPassed(result.getBeerOrderDto());
-        } else if(!result.getAllocationError() && result.getPendingInventory()) {
+        } else if (!result.getAllocationError() && result.getPendingInventory()) {
             //pending inventory
             beerOrderManager.beerOrderAllocationPendingInventory(result.getBeerOrderDto());
-        } else if(result.getAllocationError()){
+        } else if (result.getAllocationError()) {
             //allocation error
             beerOrderManager.beerOrderAllocationFailed(result.getBeerOrderDto());
         }

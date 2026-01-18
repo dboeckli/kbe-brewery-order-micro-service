@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerService;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beer.BeerService;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
 import org.springframework.beans.factory.annotation.Autowired;

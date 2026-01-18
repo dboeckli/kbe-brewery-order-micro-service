@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.customer;
 
 import ch.guru.springframework.kbe.lib.dto.CustomerPagedList;
 import org.springframework.data.domain.Pageable;

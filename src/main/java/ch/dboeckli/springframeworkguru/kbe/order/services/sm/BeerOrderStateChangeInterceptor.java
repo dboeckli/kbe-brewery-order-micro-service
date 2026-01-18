@@ -4,11 +4,11 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderEventEnum;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManagerImpl;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManagerImpl;
 import ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers.DateMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.state.State;
@@ -35,21 +35,21 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
     @Transactional
     @Override
     public void preStateChange(State<BeerOrderStatusEnum,
-                               BeerOrderEventEnum> state,
+                                   BeerOrderEventEnum> state,
                                Message<BeerOrderEventEnum> message,
                                Transition<BeerOrderStatusEnum,
-                               BeerOrderEventEnum> transition,
+                                   BeerOrderEventEnum> transition,
                                StateMachine<BeerOrderStatusEnum,
-                               BeerOrderEventEnum> stateMachine,
+                                   BeerOrderEventEnum> stateMachine,
                                StateMachine<BeerOrderStatusEnum,
-                               BeerOrderEventEnum> rootStateMachine) {
+                                   BeerOrderEventEnum> rootStateMachine) {
 
         Optional.ofNullable(message)
-            .flatMap(msg -> Optional.ofNullable((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
+            .flatMap(msg -> Optional.of((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
             .ifPresent(orderId -> {
                 log.info("Saving state for order id: " + orderId + " Status: " + state.getId());
 
-                BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
+                BeerOrder beerOrder = beerOrderRepository.getReferenceById(UUID.fromString(orderId));
                 beerOrder.setOrderStatus(state.getId());
                 beerOrderRepository.saveAndFlush(beerOrder);
             });

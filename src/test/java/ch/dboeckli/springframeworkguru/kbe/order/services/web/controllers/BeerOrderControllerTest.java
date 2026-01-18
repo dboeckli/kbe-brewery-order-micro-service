@@ -18,14 +18,10 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderService;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderService;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderLineDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,13 +34,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,9 +89,8 @@ class BeerOrderControllerTest {
     void setUp() {
         //
         mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setMessageConverters(jacksonDateTimeConverter())
-                .build();
+            .standaloneSetup(controller)
+            .build();
     }
 
     @Test
@@ -105,13 +100,13 @@ class BeerOrderControllerTest {
         orderDtos.add(buildOrderDto());
         orderDtos.add(buildOrderDto());
         given(beerOrderService.listOrders(any(), any(Pageable.class)))
-                .willReturn(new BeerOrderPagedList(orderDtos, PageRequest.of(1, 1), 2L));
+            .willReturn(new BeerOrderPagedList(orderDtos, PageRequest.of(1, 1), 2L));
 
         mockMvc.perform(get(API_ROOT + customerId + "/orders").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(openApi().isValid(OAC_SPEC));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(openApi().isValid(OAC_SPEC));
 
         then(beerOrderService).should().listOrders(any(), any(Pageable.class));
     }
@@ -131,7 +126,7 @@ class BeerOrderControllerTest {
         log.info("Order Request: " + jsonString);
 
         given(beerOrderService.placeOrder(customerUUIDCaptor.capture(),
-                beerOrderDtoArgumentCaptorCaptor.capture())).willReturn(orderResponseDto);
+            beerOrderDtoArgumentCaptorCaptor.capture())).willReturn(orderResponseDto);
 
         mockMvc.perform(post(API_ROOT + customerId + "/orders")
                 .accept(MediaType.APPLICATION_JSON)
@@ -149,10 +144,10 @@ class BeerOrderControllerTest {
             .andExpect(jsonPath("$.customerId", is(customerId.toString())))
             .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
             .andExpect(jsonPath("$.beerOrderLines[0].beerId", is(beerId.toString())));
-            // TODO: validation is failing here
-            //.andExpect(header().string("Location", containsString("/api/v1/customers/" + customerId + "/orders/")));
-            // Removed OpenAPI validation for this specific endpoint
-            // .andExpect(openApi().isValid(OAC_SPEC));
+        // TODO: validation is failing here
+        //.andExpect(header().string("Location", containsString("/api/v1/customers/" + customerId + "/orders/")));
+        // Removed OpenAPI validation for this specific endpoint
+        // .andExpect(openApi().isValid(OAC_SPEC));
 
 
         then(beerOrderService).should().placeOrder(any(UUID.class), any(BeerOrderDto.class));
@@ -167,63 +162,52 @@ class BeerOrderControllerTest {
         orderResponseDto.setOrderStatus(BeerOrderStatusEnum.NEW.name());
 
         BeerOrderLineDto beerOrderLine = BeerOrderLineDto.builder()
-                .id(UUID.randomUUID())
-                .beerId(beerId)
-                .upc("123123")
-                .orderQuantity(5)
-                .build();
+            .id(UUID.randomUUID())
+            .beerId(beerId)
+            .upc("123123")
+            .orderQuantity(5)
+            .build();
 
-        orderResponseDto.setBeerOrderLines(Arrays.asList(beerOrderLine));
+        orderResponseDto.setBeerOrderLines(Collections.singletonList(beerOrderLine));
 
         return orderResponseDto;
     }
 
     private BeerOrderDto buildOrderDto() {
-        List<BeerOrderLineDto> orderLines = Arrays.asList(BeerOrderLineDto.builder()
-                .id(UUID.randomUUID())
-                .beerId(beerId)
-                .upc("123123")
-                .orderQuantity(5)
-                .build());
+        List<BeerOrderLineDto> orderLines = Collections.singletonList(BeerOrderLineDto.builder()
+            .id(UUID.randomUUID())
+            .beerId(beerId)
+            .upc("123123")
+            .orderQuantity(5)
+            .build());
 
         return BeerOrderDto.builder()
-                .customerId(customerId)
-                .customerRef("123")
-                .orderStatusCallbackUrl(callbackUrl)
-                .beerOrderLines(orderLines)
-                .build();
+            .customerId(customerId)
+            .customerRef("123")
+            .orderStatusCallbackUrl(callbackUrl)
+            .beerOrderLines(orderLines)
+            .build();
     }
 
     @Test
     void getOrder() throws Exception {
         given(beerOrderService.getOrderById(customerUUIDCaptor.capture(),
-                orderUUIDCaptor.capture())).willReturn(getBeerOrderDtoResponse());
+            orderUUIDCaptor.capture())).willReturn(getBeerOrderDtoResponse());
 
         mockMvc.perform(get(API_ROOT + customerId + "/orders/" + orderId)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.customerId", is(customerId.toString())))
-                .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
-                .andExpect(jsonPath("$.beerOrderLines[0].beerId", is(beerId.toString())))
-                .andExpect(openApi().isValid(OAC_SPEC));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.customerId", is(customerId.toString())))
+            .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
+            .andExpect(jsonPath("$.beerOrderLines[0].beerId", is(beerId.toString())))
+            .andExpect(openApi().isValid(OAC_SPEC));
     }
 
     @Test
     void pickupOrder() throws Exception {
         mockMvc.perform(put(API_ROOT + customerId + "/orders/" + orderId + "/pickup"))
-                .andExpect(status().isNoContent())
-                .andExpect(openApi().isValid(OAC_SPEC));
-    }
-
-    private MappingJackson2HttpMessageConverter jacksonDateTimeConverter() {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, true);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        objectMapper.registerModule(new JavaTimeModule());
-
-        return new MappingJackson2HttpMessageConverter(objectMapper);
+            .andExpect(status().isNoContent())
+            .andExpect(openApi().isValid(OAC_SPEC));
     }
 }

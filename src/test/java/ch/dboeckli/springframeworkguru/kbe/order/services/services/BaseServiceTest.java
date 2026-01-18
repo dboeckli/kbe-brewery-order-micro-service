@@ -24,6 +24,7 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderLineRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderService;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.junit.jupiter.api.BeforeEach;
