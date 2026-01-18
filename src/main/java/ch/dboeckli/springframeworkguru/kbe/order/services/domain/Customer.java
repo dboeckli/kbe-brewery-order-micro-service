@@ -18,7 +18,10 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 import java.sql.Timestamp;
@@ -34,7 +37,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Proxy(lazy = false)
 public class Customer {
 
     @Id
@@ -61,7 +63,8 @@ public class Customer {
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID apiKey;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Set<BeerOrder> beerOrders;
 
 }

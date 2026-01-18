@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;

@@ -26,9 +26,6 @@ import java.sql.Timestamp;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Created by jt on 2019-01-26.
- */
 @Getter
 @Setter
 @Entity
@@ -36,7 +33,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Proxy(lazy = false)
 public class BeerOrder {
 
     @Id
@@ -56,22 +52,24 @@ public class BeerOrder {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    public boolean isNew() {
-        return this.id == null;
-    }
-
     private String customerRef;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
+    @ToString.Exclude
     private Customer customer;
 
     @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
+    @ToString.Exclude
     private Set<BeerOrderLine> beerOrderLines;
 
     @Enumerated(EnumType.STRING)
     private BeerOrderStatusEnum orderStatus = BeerOrderStatusEnum.NEW;
 
     private String orderStatusCallbackUrl;
+
+    public boolean isNew() {
+        return this.id == null;
+    }
 }

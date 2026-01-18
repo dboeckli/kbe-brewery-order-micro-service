@@ -4,6 +4,7 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -22,15 +23,15 @@ public class OrderServiceBootstrap implements CommandLineRunner {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void run(String... args) {
+    public void run(String @NonNull ... args) {
 
         Optional<Customer> customerOptional = customerRepository.findByCustomerName(CUSTOMER_NAME);
 
         if (customerOptional.isEmpty()) {
             //create if not found
             Customer savedCustomer = customerRepository.save(Customer.builder()
-                    .customerName(CUSTOMER_NAME)
-                    .build());
+                .customerName(CUSTOMER_NAME)
+                .build());
 
             log.info("##################################################################");
             log.info("# Saved Customer Id: " + savedCustomer.getId());

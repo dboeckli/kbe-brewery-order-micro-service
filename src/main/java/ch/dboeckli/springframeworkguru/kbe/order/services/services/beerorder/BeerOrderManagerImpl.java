@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderEventEnum;
@@ -15,6 +15,7 @@ import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -127,15 +128,15 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     }
 
     private void updateAllocatedQty(BeerOrderDto beerOrderDto) {
-        BeerOrder allocatedOrder = beerOrderRepository.getReferenceById(beerOrderDto.getId());
+        beerOrderRepository.findById(beerOrderDto.getId()).ifPresentOrElse(allocatedOrder -> {
+            allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
+                if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
+                    beerOrderLine.setQuantityAllocated(beerOrderLineDto.getQuantityAllocated());
+                }
+            }));
 
-        allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
-            if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
-                beerOrderLine.setQuantityAllocated(beerOrderLineDto.getQuantityAllocated());
-            }
-        }));
-
-        beerOrderRepository.saveAndFlush(allocatedOrder);
+            beerOrderRepository.saveAndFlush(allocatedOrder);
+        }, () -> log.error("Order Not Found. Id: " + beerOrderDto.getId()));
     }
 
     @Override
@@ -160,25 +161,25 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
             .setHeader(ORDER_ID_HEADER, beerOrder.getId().toString())
             .build();
 
-        stateMachine.sendEvent(beerOrderEventMessage);
+        stateMachine.sendEvent(Mono.just(beerOrderEventMessage)).blockLast();
     }
 
     private StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> build(BeerOrder beerOrder) {
 
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = stateMachineFactory.getStateMachine(beerOrder.getId());
 
-        stateMachine.stop();
+        stateMachine.stopReactively().block();
 
         stateMachine.getStateMachineAccessor()
             .doWithAllRegions(stateMachineAccess -> {
                 stateMachineAccess.addStateMachineInterceptor(beerOrderStateChangeInterceptor);
-                stateMachineAccess.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null,
-                    null, null));
+                stateMachineAccess.resetStateMachineReactively(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null,
+                    null, null)).block();
             });
 
         stateMachine.getExtendedState().getVariables().put(ORDER_OBJECT_HEADER, beerOrder);
 
-        stateMachine.start();
+        stateMachine.startReactively().block();
 
         return stateMachine;
     }

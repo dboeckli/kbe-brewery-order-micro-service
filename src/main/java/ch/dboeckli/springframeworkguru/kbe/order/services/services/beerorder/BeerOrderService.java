@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder;
 
 import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderPagedList;

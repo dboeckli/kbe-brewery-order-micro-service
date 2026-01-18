@@ -5,6 +5,8 @@ import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.Customer;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.CustomerRepository;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beer.BeerService;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManager;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class TastingRoomService {
     private final BeerService beerService;
 
     @Scheduled(fixedRateString = "${sfg.tasting.room.rate}")
-    public void createTastingRoomOrder(){
+    public void createTastingRoomOrder() {
 
         getRandomBeer().ifPresent(beerId -> {
 
@@ -35,10 +37,10 @@ public class TastingRoomService {
             BeerOrder beerOrder = BeerOrder.builder().customer(customer).build();
 
             BeerOrderLine line = BeerOrderLine.builder()
-                    .beerId(beerId.toString())
-                    .beerOrder(beerOrder)
-                    .orderQuantity(new Random().nextInt(5) + 1) //zero based
-                    .build();
+                .beerId(beerId.toString())
+                .beerOrder(beerOrder)
+                .orderQuantity(new Random().nextInt(5) + 1) //zero based
+                .build();
 
             Set<BeerOrderLine> lines = new HashSet<>(1);
             lines.add(line);
@@ -49,7 +51,7 @@ public class TastingRoomService {
         });
     }
 
-    private Optional<UUID> getRandomBeer(){
+    private Optional<UUID> getRandomBeer() {
 
         Optional<BeerPagedList> listOptional = beerService.getListofBeers();
 
@@ -57,7 +59,7 @@ public class TastingRoomService {
             BeerPagedList beerPagedList = listOptional.get();
 
             beerPagedList.getContent();
-            if (beerPagedList.getContent().size() > 0) {
+            if (!beerPagedList.getContent().isEmpty()) {
                 List<BeerDto> dtoList = beerPagedList.getContent();
 
                 int k = new Random().nextInt(dtoList.size());

@@ -1,9 +1,9 @@
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beer;
 
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,14 +21,14 @@ public class BeerServiceImpl implements BeerService {
 
     private final String beerServiceHost;
 
-    public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder, 
+    public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder,
                            @Value("${sfg.brewery.beer-service-host}") String beerServiceHost) {
         this.restTemplate = restTemplateBuilder.build();
         this.beerServiceHost = beerServiceHost;
     }
 
     @Override
-    public Optional<BeerDto> getBeerById(UUID uuid){
+    public Optional<BeerDto> getBeerById(UUID uuid) {
         return Optional.ofNullable(restTemplate.getForObject(beerServiceHost + BEER_PATH_V1 + uuid.toString(), BeerDto.class));
     }
 

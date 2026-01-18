@@ -13,7 +13,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
-import static ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
+import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
 
 
 /**
@@ -31,12 +31,12 @@ public class DeAllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOr
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
         BeerOrder beerOrder = context.getStateMachine().getExtendedState()
-                .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+            .get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
 
         jmsTemplate.convertAndSend(JmsConfig.DEALLOCATE_ORDER_QUEUE, DeAllocateOrderRequest.builder()
-                .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-                .build());
+            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
+            .build());
 
         log.info("Sent request to queue: " + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
     }

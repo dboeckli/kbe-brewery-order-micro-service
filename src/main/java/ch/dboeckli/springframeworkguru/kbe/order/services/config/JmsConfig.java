@@ -1,11 +1,11 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.JacksonJsonMessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Created by jt on 2019-09-07.
@@ -20,11 +20,10 @@ public class JmsConfig {
     public static final String DEALLOCATE_ORDER_QUEUE = "deallocate-order";
 
     @Bean // Serialize message content to json using TextMessage
-    public MessageConverter jacksonJmsMessageConverter(ObjectMapper objectMapper) {
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+    public MessageConverter jacksonJmsMessageConverter(JsonMapper objectMapper) {
+        JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(objectMapper);
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
-        converter.setObjectMapper(objectMapper);
         return converter;
     }
 }

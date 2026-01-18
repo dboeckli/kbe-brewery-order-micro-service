@@ -13,7 +13,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
-import static ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
+import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
 
 /**
  * Created by jt on 2019-09-08.
@@ -33,12 +33,12 @@ public class AllocateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderE
         log.info("Sending Allocation Request...");
 
         BeerOrder beerOrder = context.getStateMachine().getExtendedState()
-                .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+            .get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
         jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE, AllocateBeerOrderRequest
-                .builder()
-                .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-                .build());
+            .builder()
+            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
+            .build());
 
         log.info("Sent request to queue" + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
     }

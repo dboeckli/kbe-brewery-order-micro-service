@@ -15,16 +15,11 @@ spring:
         
   jackson:
     serialization:
-      write-dates-as-timestamps: false
-      write-date-timestamps-as-nanoseconds: true
       FAIL_ON_EMPTY_BEANS: false
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false 
     default-property-inclusion: non_null  
-    
-  zipkin:
-    enabled: false
-    
+
   cloud:
     discovery:
       enabled: false
@@ -79,34 +74,59 @@ management:
       probes:
         enabled: true
       show-details: always
+  info:
+    build:
+      enabled: true
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+  httpexchanges:
+    recording:
+      enabled: true
+      include: request_headers, response_headers, session_id, time_taken
+  observations:
+    annotations:
+      enabled: true
+    http:
+      server:
+        requests:
+          name: http.server.requests
+      client:
+        requests:
+          name: http-client-requests
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      otlp:
+        enabled: false
+    sampling:
+      probability: 1.0
+
+  logging:
+    export:
+      enabled: false
+      otlp:
+        enabled: false
+  simple:
+    metrics:
+      export:
+        enabled: false
 
 logging:
   level:
-    org.zalando.logbook: TRACE
     org.springframework.statemachine.support: error
     org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: ERROR
     org.springframework.web.HttpLogging: ERROR
-
-logbook:
-  filter:
-    enabled: true
-  format:
-    style: http
-  obfuscate:
-    headers:
-      - Authorization
-      - X-Secret
-    parameters:
-      - access_token
-      - password
-  predicate:
-    exclude:
-      # Exclude HTML-related calls and specific endpoints that Logbook doesn't handle correctly
-      - path: /actuator/health/**
-      - path: /h2-console/**  # Exclude H2 console
-      - path: /swagger-ui/**  # Exclude Swagger UI if used
-      - path: /v3/api-docs/** # Exclude OpenAPI docs if used
-        # Add more exclusions as needed
         
 sfg:
   brewery:

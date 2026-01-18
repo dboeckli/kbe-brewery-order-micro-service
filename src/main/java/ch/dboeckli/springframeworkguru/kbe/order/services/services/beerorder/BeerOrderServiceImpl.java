@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dboeckli.springframeworkguru.kbe.order.services.services;
+package ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
@@ -54,15 +54,15 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
         if (customerOptional.isPresent()) {
             Page<BeerOrder> beerOrderPage =
-                    beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
+                beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
 
             return new BeerOrderPagedList(beerOrderPage
-                    .stream()
-                    .map(beerOrderMapper::beerOrderToDto)
-                    .collect(Collectors.toList()), PageRequest.of(
-                    beerOrderPage.getPageable().getPageNumber(),
-                    beerOrderPage.getPageable().getPageSize()),
-                    beerOrderPage.getTotalElements());
+                .stream()
+                .map(beerOrderMapper::beerOrderToDto)
+                .collect(Collectors.toList()), PageRequest.of(
+                beerOrderPage.getPageable().getPageNumber(),
+                beerOrderPage.getPageable().getPageSize()),
+                beerOrderPage.getTotalElements());
         } else {
             return null;
         }
@@ -74,7 +74,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         log.debug("Placing Order " + beerOrderDto.toString());
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Not Found. UUID: " + customerId));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Not Found. UUID: " + customerId));
 
         BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
         beerOrder.setId(null); //should not be set by outside client
@@ -105,12 +105,12 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     private BeerOrder getOrder(UUID customerId, UUID orderId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Customer Not Found. UUID: " + customerId));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Customer Not Found. UUID: " + customerId));
 
         BeerOrder beerOrder = beerOrderRepository
-                .findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "BeerOrder Not Found. UUID: " + orderId));
+            .findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "BeerOrder Not Found. UUID: " + orderId));
 
         // fall to exception if customer id's do not match - order not for customer
         if (beerOrder.getCustomer().equals(customer)) {

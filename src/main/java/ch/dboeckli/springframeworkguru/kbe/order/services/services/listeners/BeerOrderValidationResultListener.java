@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.listeners;
 
 import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
-import ch.dboeckli.springframeworkguru.kbe.order.services.services.BeerOrderManager;
+import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManager;
 import ch.guru.springframework.kbe.lib.events.BeerOrderValidationResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,9 @@ public class BeerOrderValidationResultListener {
 
     @JmsListener(destination = JmsConfig.VALIDATE_ORDER_RESULT_QUEUE)
     public void listen(BeerOrderValidationResult result) {
+        log.info("Validation Result for Beer Order: {}", result);
         final UUID beerOrderId = result.getBeerOrderId();
-
-        log.debug("Validation Result for Order Id: " + beerOrderId + " is: " + result.getIsValid());
-
-        if(result.getIsValid()){
+        if (result.getIsValid()) {
             beerOrderManager.beerOrderPassedValidation(beerOrderId);
         } else {
             beerOrderManager.beerOrderFailedValidation(beerOrderId);

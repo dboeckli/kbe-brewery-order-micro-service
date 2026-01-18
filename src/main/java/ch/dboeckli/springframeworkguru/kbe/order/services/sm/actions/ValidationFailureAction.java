@@ -17,6 +17,6 @@ import org.springframework.stereotype.Component;
 public class ValidationFailureAction implements Action<BeerOrderStatusEnum, BeerOrderEventEnum> {
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
-        log.error("Validation Failed");
+        log.error("Validation Failed for {}", context.getMessage().getPayload());
     }
 }

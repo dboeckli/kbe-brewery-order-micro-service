@@ -18,7 +18,10 @@ package ch.dboeckli.springframeworkguru.kbe.order.services.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 import java.sql.Timestamp;
@@ -29,12 +32,10 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@ToString(exclude = "beerOrder")
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Builder
-@Proxy(lazy = false)
 public class BeerOrderLine {
 
     @Id
@@ -53,17 +54,15 @@ public class BeerOrderLine {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private BeerOrder beerOrder;
+    @Column(length = 36, columnDefinition = "varchar(36)")
+    private String beerId;
+    private Integer orderQuantity = 0;
+    private Integer quantityAllocated = 0;
 
     public boolean isNew() {
         return this.id == null;
     }
-
-    @ManyToOne
-    private BeerOrder beerOrder;
-
-    @Column(length = 36, columnDefinition = "varchar(36)")
-    private String beerId;
-
-    private Integer orderQuantity = 0;
-    private Integer quantityAllocated = 0;
 }

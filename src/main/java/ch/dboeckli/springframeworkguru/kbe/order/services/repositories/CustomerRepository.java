@@ -31,4 +31,4 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     List<Customer> findAllByCustomerNameLike(String customerName);
 
     Optional<Customer> findByCustomerName(String name);
- }
+}
