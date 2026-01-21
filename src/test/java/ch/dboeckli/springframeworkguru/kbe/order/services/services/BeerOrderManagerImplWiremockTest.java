@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
@@ -37,7 +36,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,6 +77,9 @@ class BeerOrderManagerImplWiremockTest {
     private String wireMockUrl;
     @Value("${wiremock.server.port}")
     private String wireMockPort;
+
+    @Value("${sfg.brewery.queues.allocation-failure}")
+    String allocationFailureQueue;
 
     @BeforeEach
     void setUp() {
@@ -156,7 +159,7 @@ class BeerOrderManagerImplWiremockTest {
             assertEquals(BeerOrderStatusEnum.ALLOCATION_ERROR, foundOrder.getOrderStatus());
         });
 
-        AllocationFailureEvent event = (AllocationFailureEvent) jmsTemplate.receiveAndConvert(JmsConfig.ALLOCATION_FAILURE_QUEUE);
+        AllocationFailureEvent event = (AllocationFailureEvent) jmsTemplate.receiveAndConvert(allocationFailureQueue);
         assertThat(event.getBeerOrderId()).isEqualTo(savedOrder.getId());
     }
 

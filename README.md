@@ -7,6 +7,8 @@ https://github.com/dboeckli/kbe-brewery-gateway/blob/master/README.md
 This project has been upgraded to spring boot 3.4.1 and not been tested!
 Original git repository: https://github.com/springframeworkguru/kbe-sb-microservices.git
 
+Artemis Gui when starting locally: http://localhost:8161/console
+
 ## Deployment
 
 ### Deployment with Kubernetes
