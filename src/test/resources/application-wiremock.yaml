@@ -35,13 +35,6 @@ spring:
         in-tests: false
       file: compose-wiremock.yaml
 
-sfg:
-  brewery:
-    beer-service-host: ${wiremock.server.baseUrl}
-  tasting:
-    room:
-      rate: 500
-      
 management:
   health:
     readinessstate:
@@ -120,3 +113,17 @@ logging:
 # spring:
 #   jpa:
 #     show-sql: true
+
+sfg:
+  brewery:
+    beer-service-host: ${wiremock.server.baseUrl}
+    queues:
+      validate-order: validate-order
+      validate-order-result: validate-order-result
+      allocate-order: allocate-order
+      allocate-order-result: allocate-order-result
+      allocation-failure: allocation-failure
+      deallocate-order: deallocate-order
+  tasting:
+    room:
+      rate: 500

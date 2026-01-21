@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.listeners;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManager;
 import ch.guru.springframework.kbe.lib.events.AllocateBeerOrderResult;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class BeerOrderAllocationResultListener {
     private final BeerOrderManager beerOrderManager;
 
-    @JmsListener(destination = JmsConfig.ALLOCATE_ORDER_RESULT_QUEUE)
+    @JmsListener(destination = "${sfg.brewery.queues.allocate-order-result}")
     public void listen(AllocateBeerOrderResult result) {
 
         log.info("Validation Result for Allocated Beer Order: {}", result);

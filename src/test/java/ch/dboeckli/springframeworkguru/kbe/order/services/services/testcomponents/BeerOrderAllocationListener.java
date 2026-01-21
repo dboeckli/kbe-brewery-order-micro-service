@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.services.testcomponents;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.repositories.BeerOrderRepository;
 import ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers.BeerOrderMapper;
@@ -10,6 +9,7 @@ import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,10 @@ public class BeerOrderAllocationListener {
     private final BeerOrderRepository beerOrderRepository;
     private final BeerOrderMapper beerOrderMapper;
 
-    @JmsListener(destination = JmsConfig.ALLOCATE_ORDER_QUEUE)
+    @Value("${sfg.brewery.queues.allocate-order-result}")
+    String allocateOrderResultQueue;
+
+    @JmsListener(destination = "${sfg.brewery.queues.allocate-order}")
     public void listen(Message message) throws JMSException {
         log.info("Beer Order Allocation Mock received request: {}", message);
         String jsonString = message.getBody(String.class);
@@ -52,7 +55,7 @@ public class BeerOrderAllocationListener {
         }
 
         if (sendOrder) {
-            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_RESULT_QUEUE, AllocateBeerOrderResult.builder()
+            jmsTemplate.convertAndSend(allocateOrderResultQueue, AllocateBeerOrderResult.builder()
                 .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrderFromDB))
                 .allocationError(allocationError)
                 .pendingInventory(false)

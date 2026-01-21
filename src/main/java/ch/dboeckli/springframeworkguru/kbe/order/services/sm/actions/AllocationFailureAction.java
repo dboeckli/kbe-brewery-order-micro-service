@@ -1,12 +1,12 @@
 package ch.dboeckli.springframeworkguru.kbe.order.services.sm.actions;
 
-import ch.dboeckli.springframeworkguru.kbe.order.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderEventEnum;
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderStatusEnum;
 import ch.guru.springframework.kbe.lib.events.AllocationFailureEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -24,6 +24,9 @@ public class AllocationFailureAction implements Action<BeerOrderStatusEnum, Beer
 
     private final JmsTemplate jmsTemplate;
 
+    @Value("${sfg.brewery.queues.allocation-failure}")
+    String allocateFailureQueue;
+
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
@@ -31,10 +34,10 @@ public class AllocationFailureAction implements Action<BeerOrderStatusEnum, Beer
             .get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
 
-        jmsTemplate.convertAndSend(JmsConfig.ALLOCATION_FAILURE_QUEUE, AllocationFailureEvent.builder()
+        jmsTemplate.convertAndSend(allocateFailureQueue, AllocationFailureEvent.builder()
             .beerOrderId(beerOrder.getId())
             .build());
 
-        log.info("Sent request to queue " + JmsConfig.ALLOCATE_ORDER_QUEUE + "for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue " + allocateFailureQueue + " for Beer Order Id: " + beerOrder.getId().toString());
     }
 }
