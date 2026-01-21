@@ -20,6 +20,6 @@ public class TestClassOrderer implements ClassOrderer {
 
     @Override
     public void orderClasses(ClassOrdererContext classOrdererContext) {
-        classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(ch.dboeckli.springframeworkguru.kbe.order.services.test.config.TestClassOrderer::getOrder));
+        classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(TestClassOrderer::getOrder));
     }
 }
