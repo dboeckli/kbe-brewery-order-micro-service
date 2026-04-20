@@ -17,13 +17,12 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.web.mappers;
 
-
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrder;
 import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {DateMapper.class, BeerOrderLineMapper.class})
+@Mapper(uses = { DateMapper.class, BeerOrderLineMapper.class })
 public interface BeerOrderMapper {
 
     @Mapping(source = "customer.id", target = "customerId")

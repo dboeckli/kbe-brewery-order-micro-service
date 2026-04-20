@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
 
-
 /**
  * Created by jt on 2/29/20.
  */
@@ -25,6 +24,7 @@ import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beeror
 public class DeAllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     private final JmsTemplate jmsTemplate;
+
     private final BeerOrderMapper beerOrderMapper;
 
     @Value("${sfg.brewery.queues.deallocate-order}")
@@ -33,14 +33,13 @@ public class DeAllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOr
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
-        BeerOrder beerOrder = context.getStateMachine().getExtendedState()
-            .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+        BeerOrder beerOrder = context.getStateMachine().getExtendedState().get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
+        jmsTemplate.convertAndSend(deAllocateOrderQueue,
+                DeAllocateOrderRequest.builder().beerOrder(beerOrderMapper.beerOrderToDto(beerOrder)).build());
 
-        jmsTemplate.convertAndSend(deAllocateOrderQueue, DeAllocateOrderRequest.builder()
-            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-            .build());
-
-        log.info("Sent request to queue " + deAllocateOrderQueue + " for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue " + deAllocateOrderQueue + " for Beer Order Id: "
+                + beerOrder.getId().toString());
     }
+
 }

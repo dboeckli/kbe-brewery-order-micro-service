@@ -44,8 +44,11 @@ import java.util.stream.Collectors;
 public class BeerOrderServiceImpl implements BeerOrderService {
 
     private final BeerOrderRepository beerOrderRepository;
+
     private final CustomerRepository customerRepository;
+
     private final BeerOrderMapper beerOrderMapper;
+
     private final BeerOrderManager beerOrderManager;
 
     @Override
@@ -53,17 +56,15 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
         if (customerOptional.isPresent()) {
-            Page<BeerOrder> beerOrderPage =
-                beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
+            Page<BeerOrder> beerOrderPage = beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
 
-            return new BeerOrderPagedList(beerOrderPage
-                .stream()
-                .map(beerOrderMapper::beerOrderToDto)
-                .collect(Collectors.toList()), PageRequest.of(
-                beerOrderPage.getPageable().getPageNumber(),
-                beerOrderPage.getPageable().getPageSize()),
-                beerOrderPage.getTotalElements());
-        } else {
+            return new BeerOrderPagedList(
+                    beerOrderPage.stream().map(beerOrderMapper::beerOrderToDto).collect(Collectors.toList()),
+                    PageRequest.of(beerOrderPage.getPageable().getPageNumber(),
+                            beerOrderPage.getPageable().getPageSize()),
+                    beerOrderPage.getTotalElements());
+        }
+        else {
             return null;
         }
     }
@@ -74,10 +75,11 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         log.debug("Placing Order " + beerOrderDto.toString());
 
         Customer customer = customerRepository.findById(customerId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Not Found. UUID: " + customerId));
+            .orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Not Found. UUID: " + customerId));
 
         BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
-        beerOrder.setId(null); //should not be set by outside client
+        beerOrder.setId(null); // should not be set by outside client
         beerOrder.setCustomer(customer);
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
@@ -105,20 +107,20 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     private BeerOrder getOrder(UUID customerId, UUID orderId) {
         Customer customer = customerRepository.findById(customerId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "Customer Not Found. UUID: " + customerId));
+            .orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Not Found. UUID: " + customerId));
 
-        BeerOrder beerOrder = beerOrderRepository
-            .findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "BeerOrder Not Found. UUID: " + orderId));
+        BeerOrder beerOrder = beerOrderRepository.findById(orderId)
+            .orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "BeerOrder Not Found. UUID: " + orderId));
 
         // fall to exception if customer id's do not match - order not for customer
         if (beerOrder.getCustomer().equals(customer)) {
             return beerOrder;
-        } else {
+        }
+        else {
             throw new RuntimeException("Customer Not Found");
         }
     }
-
 
 }

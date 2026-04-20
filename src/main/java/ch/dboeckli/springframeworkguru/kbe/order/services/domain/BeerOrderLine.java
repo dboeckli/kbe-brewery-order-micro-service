@@ -54,15 +54,20 @@ public class BeerOrderLine {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private BeerOrder beerOrder;
+
     @Column(length = 36, columnDefinition = "varchar(36)")
     private String beerId;
+
     private Integer orderQuantity = 0;
+
     private Integer quantityAllocated = 0;
 
     public boolean isNew() {
         return this.id == null;
     }
+
 }

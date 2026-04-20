@@ -23,8 +23,11 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class TastingRoomService {
+
     private final BeerOrderManager beerOrderManager;
+
     private final CustomerRepository customerRepository;
+
     private final BeerService beerService;
 
     @Scheduled(fixedRateString = "${sfg.tasting.room.rate}")
@@ -32,14 +35,15 @@ public class TastingRoomService {
 
         getRandomBeer().ifPresent(beerId -> {
 
-            Customer customer = customerRepository.findByCustomerName(OrderServiceBootstrap.CUSTOMER_NAME).orElseThrow();
+            Customer customer = customerRepository.findByCustomerName(OrderServiceBootstrap.CUSTOMER_NAME)
+                .orElseThrow();
 
             BeerOrder beerOrder = BeerOrder.builder().customer(customer).build();
 
             BeerOrderLine line = BeerOrderLine.builder()
                 .beerId(beerId.toString())
                 .beerOrder(beerOrder)
-                .orderQuantity(new Random().nextInt(5) + 1) //zero based
+                .orderQuantity(new Random().nextInt(5) + 1) // zero based
                 .build();
 
             Set<BeerOrderLine> lines = new HashSet<>(1);
@@ -73,4 +77,5 @@ public class TastingRoomService {
         return Optional.empty();
 
     }
+
 }

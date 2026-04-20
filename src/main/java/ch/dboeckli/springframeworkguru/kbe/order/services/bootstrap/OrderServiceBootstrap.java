@@ -28,19 +28,19 @@ public class OrderServiceBootstrap implements CommandLineRunner {
         Optional<Customer> customerOptional = customerRepository.findByCustomerName(CUSTOMER_NAME);
 
         if (customerOptional.isEmpty()) {
-            //create if not found
-            Customer savedCustomer = customerRepository.save(Customer.builder()
-                .customerName(CUSTOMER_NAME)
-                .build());
+            // create if not found
+            Customer savedCustomer = customerRepository.save(Customer.builder().customerName(CUSTOMER_NAME).build());
 
             log.info("##################################################################");
             log.info("# Saved Customer Id: " + savedCustomer.getId());
             log.info("##################################################################");
-        } else {
+        }
+        else {
             log.info("##################################################################");
             log.info("# Found Customer Id: " + customerOptional.get().getId());
             log.info("##################################################################");
         }
 
     }
+
 }

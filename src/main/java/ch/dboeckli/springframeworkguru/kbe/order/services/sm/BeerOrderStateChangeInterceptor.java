@@ -26,26 +26,25 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
+public class BeerOrderStateChangeInterceptor
+        extends StateMachineInterceptorAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     private final BeerOrderRepository beerOrderRepository;
+
     private final RestTemplateBuilder restTemplateBuilder;
+
     private final DateMapper dateMapper = new DateMapper();
 
     @Transactional
     @Override
-    public void preStateChange(State<BeerOrderStatusEnum,
-                                   BeerOrderEventEnum> state,
-                               Message<BeerOrderEventEnum> message,
-                               Transition<BeerOrderStatusEnum,
-                                   BeerOrderEventEnum> transition,
-                               StateMachine<BeerOrderStatusEnum,
-                                   BeerOrderEventEnum> stateMachine,
-                               StateMachine<BeerOrderStatusEnum,
-                                   BeerOrderEventEnum> rootStateMachine) {
+    public void preStateChange(State<BeerOrderStatusEnum, BeerOrderEventEnum> state,
+            Message<BeerOrderEventEnum> message, Transition<BeerOrderStatusEnum, BeerOrderEventEnum> transition,
+            StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine,
+            StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> rootStateMachine) {
 
         Optional.ofNullable(message)
-            .flatMap(msg -> Optional.of((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
+            .flatMap(msg -> Optional
+                .of((String) msg.getHeaders().getOrDefault(BeerOrderManagerImpl.ORDER_ID_HEADER, " ")))
             .ifPresent(orderId -> {
                 log.info("Saving state for order id: " + orderId + " Status: " + state.getId());
 
@@ -55,34 +54,40 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
             });
     }
 
-//    @Override
-//    public void postStateChange(State<BeerOrderStatusEnum, BeerOrderEventEnum> state, Message<BeerOrderEventEnum> message, Transition<BeerOrderStatusEnum, BeerOrderEventEnum> transition, StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine) {
-//        log.debug("Post State Change");
-//
-//        BeerOrder beerOrder = stateMachine.getExtendedState()
-//                .get(ORDER_OBJECT_HEADER, BeerOrder.class);
-//
-//        try{
-//            if (beerOrder.getOrderStatusCallbackUrl() != null) {
-//
-//                OrderStatusUpdate update = OrderStatusUpdate.builder()
-//                        .id(beerOrder.getId())
-//                        .orderId(beerOrder.getId())
-//                        .version(beerOrder.getVersion() != null ? beerOrder.getVersion().intValue() : null)
-//                        .createdDate(dateMapper.asOffsetDateTime(beerOrder.getCreatedDate()))
-//                        .lastModifiedDate(dateMapper.asOffsetDateTime(beerOrder.getLastModifiedDate()))
-//                        .orderStatus(beerOrder.getOrderStatus() != null ? beerOrder.getOrderStatus().toString() : null)
-//                        .customerRef(beerOrder.getCustomerRef())
-//                        .build();
-//
-//                log.debug("Posting to callback url");
-//                RestTemplate restTemplate = restTemplateBuilder.build();
-//                restTemplate.postForObject(beerOrder.getOrderStatusCallbackUrl(), update, String.class);
-//            }
-//        } catch (Throwable t){
-//            log.error("Error Preforming callback for order: " + beerOrder.getId(), t);
-//        }
-//
-//        log.debug("Post State change complete");
-//    }
+    // @Override
+    // public void postStateChange(State<BeerOrderStatusEnum, BeerOrderEventEnum> state,
+    // Message<BeerOrderEventEnum> message, Transition<BeerOrderStatusEnum,
+    // BeerOrderEventEnum> transition, StateMachine<BeerOrderStatusEnum,
+    // BeerOrderEventEnum> stateMachine) {
+    // log.debug("Post State Change");
+    //
+    // BeerOrder beerOrder = stateMachine.getExtendedState()
+    // .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+    //
+    // try{
+    // if (beerOrder.getOrderStatusCallbackUrl() != null) {
+    //
+    // OrderStatusUpdate update = OrderStatusUpdate.builder()
+    // .id(beerOrder.getId())
+    // .orderId(beerOrder.getId())
+    // .version(beerOrder.getVersion() != null ? beerOrder.getVersion().intValue() : null)
+    // .createdDate(dateMapper.asOffsetDateTime(beerOrder.getCreatedDate()))
+    // .lastModifiedDate(dateMapper.asOffsetDateTime(beerOrder.getLastModifiedDate()))
+    // .orderStatus(beerOrder.getOrderStatus() != null ?
+    // beerOrder.getOrderStatus().toString() : null)
+    // .customerRef(beerOrder.getCustomerRef())
+    // .build();
+    //
+    // log.debug("Posting to callback url");
+    // RestTemplate restTemplate = restTemplateBuilder.build();
+    // restTemplate.postForObject(beerOrder.getOrderStatusCallbackUrl(), update,
+    // String.class);
+    // }
+    // } catch (Throwable t){
+    // log.error("Error Preforming callback for order: " + beerOrder.getId(), t);
+    // }
+    //
+    // log.debug("Post State change complete");
+    // }
+
 }

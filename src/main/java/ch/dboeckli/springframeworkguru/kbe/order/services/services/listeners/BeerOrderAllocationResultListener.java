@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class BeerOrderAllocationResultListener {
+
     private final BeerOrderManager beerOrderManager;
 
     @JmsListener(destination = "${sfg.brewery.queues.allocate-order-result}")
@@ -22,14 +23,17 @@ public class BeerOrderAllocationResultListener {
         log.info("Validation Result for Allocated Beer Order: {}", result);
 
         if (!result.getAllocationError() && !result.getPendingInventory()) {
-            //allocated normally
+            // allocated normally
             beerOrderManager.beerOrderAllocationPassed(result.getBeerOrderDto());
-        } else if (!result.getAllocationError() && result.getPendingInventory()) {
-            //pending inventory
+        }
+        else if (!result.getAllocationError() && result.getPendingInventory()) {
+            // pending inventory
             beerOrderManager.beerOrderAllocationPendingInventory(result.getBeerOrderDto());
-        } else if (result.getAllocationError()) {
-            //allocation error
+        }
+        else if (result.getAllocationError()) {
+            // allocation error
             beerOrderManager.beerOrderAllocationFailed(result.getBeerOrderDto());
         }
     }
+
 }

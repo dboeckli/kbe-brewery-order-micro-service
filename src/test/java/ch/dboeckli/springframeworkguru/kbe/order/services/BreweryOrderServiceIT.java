@@ -13,13 +13,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@ContextConfiguration(initializers = DockerComposeInitializer.class) // this ensures that Docker Compose from compose-wiremock.yaml is stopped before running the test
+@ContextConfiguration(initializers = DockerComposeInitializer.class) // this ensures that
+                                                                     // Docker Compose
+                                                                     // from
+                                                                     // compose-wiremock.yaml
+                                                                     // is stopped before
+                                                                     // running the test
 @Slf4j
 class BreweryOrderServiceIT {
 
     @Autowired
     private ApplicationContext applicationContext;
-
 
     @Test
     void contextLoads() {

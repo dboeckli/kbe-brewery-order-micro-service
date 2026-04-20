@@ -43,13 +43,8 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 @SpringBootTest
-@EnableWireMock({
-    @ConfigureWireMock(
-        filesUnderDirectory = "src/test/resources/wiremock"
-    )
-})
+@EnableWireMock({ @ConfigureWireMock(filesUnderDirectory = "src/test/resources/wiremock") })
 @ActiveProfiles("wiremock")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Slf4j
@@ -58,23 +53,34 @@ class BeerOrderManagerImplWiremockTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
     @InjectWireMock
     WireMockServer wireMockServer;
+
     @Autowired
     BeerOrderManager beerOrderManager;
+
     @Autowired
     BeerOrderRepository beerOrderRepository;
+
     @Autowired
     CustomerRepository customerRepository;
+
     @Autowired
     JmsTemplate jmsTemplate;
+
     Customer testCustomer;
+
     UUID beerIdFirst = UUID.randomUUID();
+
     UUID beerIdSecond = UUID.randomUUID();
+
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
+
     @Value("${wiremock.server.baseUrl}")
     private String wireMockUrl;
+
     @Value("${wiremock.server.port}")
     private String wireMockPort;
 
@@ -121,7 +127,7 @@ class BeerOrderManagerImplWiremockTest {
         BeerOrder foundOrder = foundBeerOrderRef.get();
         assertNotNull(foundOrder);
 
-        //pickup order
+        // pickup order
         beerOrderManager.pickupBeerOrder(foundOrder.getId());
         await().untilAsserted(() -> {
             BeerOrder orderCheck = beerOrderRepository.findById(savedOrder.getId()).get();
@@ -148,7 +154,8 @@ class BeerOrderManagerImplWiremockTest {
     @Order(4)
     void testBeerOrderAllocationFailed() {
         BeerDto beerDto = BeerDto.builder().id(beerIdFirst).upc("1234").build();
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString())
+            .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
 
         BeerOrder orderToSave = createBeerOrder();
         orderToSave.setCustomerRef("allocation-fail");
@@ -195,7 +202,8 @@ class BeerOrderManagerImplWiremockTest {
     }
 
     private void checkWireMockServer() {
-        log.info("### WireMock server on base url {} running at url {} on port {}", wireMockServer.baseUrl(), wireMockUrl, wireMockPort);
+        log.info("### WireMock server on base url {} running at url {} on port {}", wireMockServer.baseUrl(),
+                wireMockUrl, wireMockPort);
 
         List<StubMapping> mappings = wireMockServer.getStubMappings();
         Options options = wireMockServer.getOptions();
@@ -203,10 +211,8 @@ class BeerOrderManagerImplWiremockTest {
         log.info("Total number of stub mappings: {}", mappings.size());
         assertEquals(4, mappings.size());
         mappings.forEach(mapping -> log.info("### Stub Mapping: URL: {}, Method: {}, Response: Status {}, Body: {}",
-            mapping.getRequest().getUrl(),
-            mapping.getRequest().getMethod(),
-            mapping.getResponse().getStatus(),
-            mapping.getResponse().getBody()));
+                mapping.getRequest().getUrl(), mapping.getRequest().getMethod(), mapping.getResponse().getStatus(),
+                mapping.getResponse().getBody()));
 
         String url = wireMockUrl + "/__admin/";
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -219,24 +225,27 @@ class BeerOrderManagerImplWiremockTest {
         BeerDto beerDtoFirst = BeerDto.builder().id(beerIdFirst).upc("1234").build();
         BeerDto beerDtoSecond = BeerDto.builder().id(beerIdSecond).upc("5678").build();
 
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString())
+            .willReturn(okJson(objectMapper.writeValueAsString(beerDtoFirst))));
         log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdFirst.toString());
-        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString()).willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
+        wireMockServer.stubFor(get(BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString())
+            .willReturn(okJson(objectMapper.writeValueAsString(beerDtoSecond))));
         log.info("#### Stub created for : " + BeerServiceImpl.BEER_PATH_V1 + beerIdSecond.toString());
 
         // Create a list of BeerDto object
-        BeerPagedList beerPagedList = new BeerPagedList(Arrays.asList(
-            BeerDto.builder().id(beerIdFirst).upc(beerDtoFirst.getUpc()).build(),
-            BeerDto.builder().id(beerIdSecond).upc(beerDtoSecond.getUpc()).build()),
-            PageRequest.of(0, 25), 2);
+        BeerPagedList beerPagedList = new BeerPagedList(
+                Arrays.asList(BeerDto.builder().id(beerIdFirst).upc(beerDtoFirst.getUpc()).build(),
+                        BeerDto.builder().id(beerIdSecond).upc(beerDtoSecond.getUpc()).build()),
+                PageRequest.of(0, 25), 2);
 
-        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1).willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
+        wireMockServer.stubFor(get(BeerServiceImpl.LIST_BEER_PATH_V1)
+            .willReturn(okJson(objectMapper.writeValueAsString(beerPagedList))));
         log.info("#### Stub created for : " + BeerServiceImpl.LIST_BEER_PATH_V1);
 
         // Now we are printing out all stubs:
         log.info("### Registered stubs:");
-        wireMockServer.getStubMappings().forEach(stub ->
-            log.info("Stub: " + stub.getRequest().getUrl() + " -> " + stub.getResponse().getStatus())
-        );
+        wireMockServer.getStubMappings()
+            .forEach(stub -> log.info("Stub: " + stub.getRequest().getUrl() + " -> " + stub.getResponse().getStatus()));
     }
+
 }

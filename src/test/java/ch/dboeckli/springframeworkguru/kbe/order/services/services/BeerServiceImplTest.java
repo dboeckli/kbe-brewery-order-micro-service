@@ -23,14 +23,16 @@ class BeerServiceImplTest {
 
     @Autowired
     BeerServiceImpl beerService;
+
     @Autowired
     ObjectMapper mapper;
+
     @Autowired
     private MockRestServiceServer server;
 
     @Test
     void getBeerById() {
-        //given
+        // given
         UUID testUUID = UUID.randomUUID();
         BeerDto dto = BeerDto.builder().id(testUUID).build();
         String jsonDto = mapper.writeValueAsString(dto);
@@ -42,4 +44,5 @@ class BeerServiceImplTest {
 
         assertTrue(beerDtoOptional.isPresent());
     }
+
 }

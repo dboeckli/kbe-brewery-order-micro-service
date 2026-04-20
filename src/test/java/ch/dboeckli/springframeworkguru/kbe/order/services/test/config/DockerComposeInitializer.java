@@ -15,7 +15,7 @@ public class DockerComposeInitializer implements ApplicationContextInitializer<C
         log.info("Shutting down existing Docker environment...");
         try {
             String composeFilePath = System.getProperty("docker.compose.file",
-                System.getProperty("user.dir") + "/compose-wiremock.yaml");
+                    System.getProperty("user.dir") + "/compose-wiremock.yaml");
 
             log.info("Using Docker Compose file: {}", composeFilePath);
 
@@ -24,21 +24,20 @@ public class DockerComposeInitializer implements ApplicationContextInitializer<C
                 throw new RuntimeException("Docker Compose file not found: " + composeFilePath);
             }
 
-            ProcessBuilder pb = new ProcessBuilder(
-                "docker", "compose",
-                "-f", composeFilePath,
-                "down"
-            );
+            ProcessBuilder pb = new ProcessBuilder("docker", "compose", "-f", composeFilePath, "down");
             pb.inheritIO();
             Process process = pb.start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 throw new RuntimeException("docker compose down failed");
-            } else {
+            }
+            else {
                 log.info("Docker environment shut down successfully");
             }
-        } catch (IOException | InterruptedException e) {
+        }
+        catch (IOException | InterruptedException e) {
             throw new RuntimeException("Failed to shut down Docker environment", e);
         }
     }
+
 }

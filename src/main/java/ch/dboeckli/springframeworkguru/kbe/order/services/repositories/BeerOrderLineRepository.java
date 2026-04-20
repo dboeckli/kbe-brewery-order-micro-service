@@ -17,12 +17,13 @@
 
 package ch.dboeckli.springframeworkguru.kbe.order.services.repositories;
 
-
 import ch.dboeckli.springframeworkguru.kbe.order.services.domain.BeerOrderLine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.UUID;
 
-public interface BeerOrderLineRepository extends JpaRepository<BeerOrderLine, UUID>, PagingAndSortingRepository<BeerOrderLine, UUID> {
+public interface BeerOrderLineRepository
+        extends JpaRepository<BeerOrderLine, UUID>, PagingAndSortingRepository<BeerOrderLine, UUID> {
+
 }

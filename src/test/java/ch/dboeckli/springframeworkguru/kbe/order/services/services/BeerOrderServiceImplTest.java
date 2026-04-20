@@ -33,10 +33,10 @@ import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-
 @SpringBootTest
 @ActiveProfiles("test")
-@ComponentScan(basePackages = {"guru.sfg.brewery.order.service.services", "guru.sfg.brewery.order.service.web.mappers"})
+@ComponentScan(
+        basePackages = { "guru.sfg.brewery.order.service.services", "guru.sfg.brewery.order.service.web.mappers" })
 class BeerOrderServiceImplTest extends BaseServiceTest {
 
     @MockitoBean
@@ -45,7 +45,7 @@ class BeerOrderServiceImplTest extends BaseServiceTest {
     @Test
     void listOrders() {
 
-        //make sure we have two orders
+        // make sure we have two orders
         assertThat(beerOrderRepository.count()).isGreaterThanOrEqualTo(3L);
 
         BeerOrderPagedList pagedList = beerOrderService.listOrders(testCustomer.getId(), PageRequest.of(0, 25));
@@ -58,8 +58,8 @@ class BeerOrderServiceImplTest extends BaseServiceTest {
     void placeOrder() {
         BeerOrderDto dto = BeerOrderDto.builder()
             .orderStatusCallbackUrl("http://foo.com")
-            .beerOrderLines(Collections.singletonList(BeerOrderLineDto
-                .builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
+            .beerOrderLines(Collections
+                .singletonList(BeerOrderLineDto.builder().beerId(testBeerGalaxy.getId()).orderQuantity(12).build()))
             .build();
 
         BeerOrderDto placedOrder = beerOrderService.placeOrder(testCustomer.getId(), dto);
@@ -86,4 +86,5 @@ class BeerOrderServiceImplTest extends BaseServiceTest {
         assertThat(dto.getId()).isEqualTo(testOrder1.getId());
         assertThat(dto.getOrderStatus()).isEqualTo("PICKED_UP");
     }
+
 }

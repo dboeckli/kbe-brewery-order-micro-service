@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+
     private final CustomerMapper customerMapper;
 
     @Override
@@ -29,12 +30,10 @@ public class CustomerServiceImpl implements CustomerService {
 
         Page<Customer> customerPage = customerRepository.findAll(pageable);
 
-        return new CustomerPagedList(customerPage
-            .stream()
-            .map(customerMapper::customerToDto)
-            .collect(Collectors.toList()),
-            PageRequest.of(customerPage.getPageable().getPageNumber(),
-                customerPage.getPageable().getPageSize()),
-            customerPage.getTotalElements());
+        return new CustomerPagedList(
+                customerPage.stream().map(customerMapper::customerToDto).collect(Collectors.toList()),
+                PageRequest.of(customerPage.getPageable().getPageNumber(), customerPage.getPageable().getPageSize()),
+                customerPage.getTotalElements());
     }
+
 }
