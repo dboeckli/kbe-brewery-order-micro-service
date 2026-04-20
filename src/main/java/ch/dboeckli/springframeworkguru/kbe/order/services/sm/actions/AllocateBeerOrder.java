@@ -24,25 +24,23 @@ import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beeror
 public class AllocateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     private final JmsTemplate jmsTemplate;
+
     private final BeerOrderMapper beerOrderMapper;
 
     @Value("${sfg.brewery.queues.allocate-order}")
     String allocateOrderQueue;
-
 
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
         log.info("Sending Allocation Request...");
 
-        BeerOrder beerOrder = context.getStateMachine().getExtendedState()
-            .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+        BeerOrder beerOrder = context.getStateMachine().getExtendedState().get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
-        jmsTemplate.convertAndSend(allocateOrderQueue, AllocateBeerOrderRequest
-            .builder()
-            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-            .build());
+        jmsTemplate.convertAndSend(allocateOrderQueue,
+                AllocateBeerOrderRequest.builder().beerOrder(beerOrderMapper.beerOrderToDto(beerOrder)).build());
 
         log.info("Sent request to queue " + allocateOrderQueue + " for Beer Order Id: " + beerOrder.getId().toString());
     }
+
 }

@@ -12,6 +12,7 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Component
 public class JmsConfig {
+
     @Bean // Serialize message content to json using TextMessage
     public MessageConverter jacksonJmsMessageConverter(JsonMapper objectMapper) {
         JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(objectMapper);
@@ -19,4 +20,5 @@ public class JmsConfig {
         converter.setTypeIdPropertyName("_type");
         return converter;
     }
+
 }

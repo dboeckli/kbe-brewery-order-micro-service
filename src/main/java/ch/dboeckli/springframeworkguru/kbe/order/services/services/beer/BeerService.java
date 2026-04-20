@@ -13,4 +13,5 @@ public interface BeerService {
     Optional<BeerDto> getBeerByUpc(String upc);
 
     Optional<BeerPagedList> getListofBeers();
+
 }

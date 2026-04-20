@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
 /**
  * Created by jt on 2019-01-26.
  */
@@ -40,4 +39,5 @@ public interface BeerOrderRepository extends JpaRepository<BeerOrder, UUID> {
 
     @Query("select b from BeerOrder b where b.id = ?1")
     Optional<BeerOrder> findOrderUsingStringId(String id);
+
 }

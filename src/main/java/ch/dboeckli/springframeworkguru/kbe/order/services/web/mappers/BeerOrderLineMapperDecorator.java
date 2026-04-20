@@ -13,6 +13,7 @@ import java.util.UUID;
 public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMapper {
 
     private BeerService beerService;
+
     private BeerOrderLineMapper beerOrderLineMapper;
 
     @Autowired
@@ -40,4 +41,5 @@ public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMappe
 
         return orderLineDto;
     }
+
 }

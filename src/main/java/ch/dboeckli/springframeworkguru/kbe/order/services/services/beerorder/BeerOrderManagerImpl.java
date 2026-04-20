@@ -27,10 +27,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BeerOrderManagerImpl implements BeerOrderManager {
 
     public static final String ORDER_ID_HEADER = "ORDER_ID";
+
     public static final String ORDER_OBJECT_HEADER = "BEER_ORDER";
 
     private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachineFactory;
+
     private final BeerOrderRepository beerOrderRepository;
+
     private final BeerOrderStateChangeInterceptor beerOrderStateChangeInterceptor;
 
     @Transactional
@@ -41,7 +44,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
         BeerOrder savedOrder = beerOrderRepository.saveAndFlush(beerOrder);
 
-        //send validation event
+        // send validation event
         sendBeerOrderEvent(savedOrder, BeerOrderEventEnum.VALIDATE_ORDER);
 
         return savedOrder;
@@ -81,8 +84,10 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 if (beerOrder.getOrderStatus().equals(statusEnum)) {
                     found.set(true);
                     log.debug("Order Found");
-                } else {
-                    log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: " + beerOrder.getOrderStatus().name());
+                }
+                else {
+                    log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: "
+                            + beerOrder.getOrderStatus().name());
                 }
             }, () -> log.debug("Order Id Not Found"));
 
@@ -90,7 +95,8 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 try {
                     log.debug("Sleeping for retry");
                     Thread.sleep(200);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     log.info("Did not found order {} with status {}. Retry", beerOrderId, statusEnum);
                 }
             }
@@ -103,7 +109,9 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
         awaitForStatus(beerOrderId, BeerOrderStatusEnum.PENDING_VALIDATION);
 
-        beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_FAILED), () -> log.error("Order Not Found. Id: " + beerOrderId));
+        beerOrderRepository.findById(beerOrderId)
+            .ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_FAILED),
+                    () -> log.error("Order Not Found. Id: " + beerOrderId));
     }
 
     @Override
@@ -129,11 +137,12 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     private void updateAllocatedQty(BeerOrderDto beerOrderDto) {
         beerOrderRepository.findById(beerOrderDto.getId()).ifPresentOrElse(allocatedOrder -> {
-            allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
-                if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
-                    beerOrderLine.setQuantityAllocated(beerOrderLineDto.getQuantityAllocated());
-                }
-            }));
+            allocatedOrder.getBeerOrderLines()
+                .forEach(beerOrderLine -> beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
+                    if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
+                        beerOrderLine.setQuantityAllocated(beerOrderLineDto.getQuantityAllocated());
+                    }
+                }));
 
             beerOrderRepository.saveAndFlush(allocatedOrder);
         }, () -> log.error("Order Not Found. Id: " + beerOrderDto.getId()));
@@ -141,17 +150,23 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     @Override
     public void beerOrderAllocationFailed(BeerOrderDto beerOrderDto) {
-        beerOrderRepository.findById(beerOrderDto.getId()).ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_FAILED), () -> log.error("Order Not Found. Id: " + beerOrderDto.getId()));
+        beerOrderRepository.findById(beerOrderDto.getId())
+            .ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_FAILED),
+                    () -> log.error("Order Not Found. Id: " + beerOrderDto.getId()));
     }
 
     @Override
     public void pickupBeerOrder(UUID beerOrderId) {
-        beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEER_ORDER_PICKED_UP), () -> log.error("Order Not Found. Id: " + beerOrderId));
+        beerOrderRepository.findById(beerOrderId)
+            .ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEER_ORDER_PICKED_UP),
+                    () -> log.error("Order Not Found. Id: " + beerOrderId));
     }
 
     @Override
     public void cancelOrder(UUID beerOrderId) {
-        beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.CANCEL_ORDER), () -> log.error("Order Not Found. Id: " + beerOrderId));
+        beerOrderRepository.findById(beerOrderId)
+            .ifPresentOrElse(beerOrder -> sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.CANCEL_ORDER),
+                    () -> log.error("Order Not Found. Id: " + beerOrderId));
     }
 
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum event) {
@@ -166,16 +181,18 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     private StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> build(BeerOrder beerOrder) {
 
-        StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = stateMachineFactory.getStateMachine(beerOrder.getId());
+        StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = stateMachineFactory
+            .getStateMachine(beerOrder.getId());
 
         stateMachine.stopReactively().block();
 
-        stateMachine.getStateMachineAccessor()
-            .doWithAllRegions(stateMachineAccess -> {
-                stateMachineAccess.addStateMachineInterceptor(beerOrderStateChangeInterceptor);
-                stateMachineAccess.resetStateMachineReactively(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null,
-                    null, null)).block();
-            });
+        stateMachine.getStateMachineAccessor().doWithAllRegions(stateMachineAccess -> {
+            stateMachineAccess.addStateMachineInterceptor(beerOrderStateChangeInterceptor);
+            stateMachineAccess
+                .resetStateMachineReactively(
+                        new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null, null, null))
+                .block();
+        });
 
         stateMachine.getExtendedState().getVariables().put(ORDER_OBJECT_HEADER, beerOrder);
 
@@ -183,4 +200,5 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
         return stateMachine;
     }
+
 }

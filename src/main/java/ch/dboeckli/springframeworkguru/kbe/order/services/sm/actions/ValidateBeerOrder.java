@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 
 import static ch.dboeckli.springframeworkguru.kbe.order.services.services.beerorder.BeerOrderManagerImpl.ORDER_OBJECT_HEADER;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ValidateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     private final JmsTemplate jmsTemplate;
+
     private final BeerOrderMapper beerOrderMapper;
 
     @Value("${sfg.brewery.queues.validate-order}")
@@ -30,14 +30,14 @@ public class ValidateBeerOrder implements Action<BeerOrderStatusEnum, BeerOrderE
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> stateContext) {
 
-        BeerOrder beerOrder = stateContext.getStateMachine().getExtendedState()
+        BeerOrder beerOrder = stateContext.getStateMachine()
+            .getExtendedState()
             .get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
-        jmsTemplate.convertAndSend(validateOrderQueue, ValidateBeerOrderRequest
-            .builder()
-            .beerOrder(beerOrderMapper.beerOrderToDto(beerOrder))
-            .build());
+        jmsTemplate.convertAndSend(validateOrderQueue,
+                ValidateBeerOrderRequest.builder().beerOrder(beerOrderMapper.beerOrderToDto(beerOrder)).build());
 
         log.info("Sent request to queue" + validateOrderQueue + "for Beer Order Id: " + beerOrder.getId().toString());
     }
+
 }

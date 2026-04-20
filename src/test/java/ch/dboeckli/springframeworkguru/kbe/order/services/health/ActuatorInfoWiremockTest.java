@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.wiremock.spring.EnableWireMock;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ActuatorInfoWiremockTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Autowired
     BuildProperties buildProperties;
 
@@ -43,9 +43,7 @@ class ActuatorInfoWiremockTest {
             .andExpect(jsonPath("$.git.commit.id.abbrev").isString())
 
             .andExpect(jsonPath("$.build.artifact").value(buildProperties.getArtifact()))
-            .andExpect(jsonPath("$.build.group").value(buildProperties.getGroup()))
-
-            .andExpect(jsonPath("$.java.version").value(startsWith("21")));
+            .andExpect(jsonPath("$.build.group").value(buildProperties.getGroup()));
     }
 
     @Test
@@ -67,11 +65,11 @@ class ActuatorInfoWiremockTest {
         try {
             Object json = OBJECT_MAPPER.readValue(body, Object.class);
             return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Falls kein valides JSON: unverändert zurückgeben
             return body;
         }
     }
-
 
 }

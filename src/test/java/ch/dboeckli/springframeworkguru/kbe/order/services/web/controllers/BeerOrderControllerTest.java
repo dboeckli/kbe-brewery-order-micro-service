@@ -54,19 +54,18 @@ import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith({ MockitoExtension.class })
 @Slf4j
 @ActiveProfiles("test")
 class BeerOrderControllerTest {
 
-    //test properties
+    // test properties
     static final String API_ROOT = "/api/v1/customers/";
     static final UUID customerId = UUID.randomUUID();
     static final UUID orderId = UUID.randomUUID();
     static final UUID beerId = UUID.randomUUID();
     static final String callbackUrl = "http://example.com";
     static final String OAC_SPEC = "https://raw.githubusercontent.com/sfg-beer-works/brewery-api/master/spec/openapi.yaml";
-
 
     @Mock
     BeerOrderService beerOrderService;
@@ -88,14 +87,12 @@ class BeerOrderControllerTest {
     @BeforeEach
     void setUp() {
         //
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(controller)
-            .build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
     @Test
     void listOrders() throws Exception {
-        //given
+        // given
         List<BeerOrderDto> orderDtos = new ArrayList<>();
         orderDtos.add(buildOrderDto());
         orderDtos.add(buildOrderDto());
@@ -113,23 +110,23 @@ class BeerOrderControllerTest {
 
     @Test
     void placeOrder() throws Exception {
-        //given
-        //place order
+        // given
+        // place order
         BeerOrderDto orderDto = buildOrderDto();
 
-        //response order
+        // response order
         BeerOrderDto orderResponseDto = getBeerOrderDtoResponse();
 
-        //build json string
+        // build json string
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(orderDto);
         log.info("Order Request: " + jsonString);
 
-        given(beerOrderService.placeOrder(customerUUIDCaptor.capture(),
-            beerOrderDtoArgumentCaptorCaptor.capture())).willReturn(orderResponseDto);
+        given(beerOrderService.placeOrder(customerUUIDCaptor.capture(), beerOrderDtoArgumentCaptorCaptor.capture()))
+            .willReturn(orderResponseDto);
 
-        mockMvc.perform(post(API_ROOT + customerId + "/orders")
-                .accept(MediaType.APPLICATION_JSON)
+        mockMvc
+            .perform(post(API_ROOT + customerId + "/orders").accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
@@ -145,10 +142,10 @@ class BeerOrderControllerTest {
             .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
             .andExpect(jsonPath("$.beerOrderLines[0].beerId", is(beerId.toString())));
         // TODO: validation is failing here
-        //.andExpect(header().string("Location", containsString("/api/v1/customers/" + customerId + "/orders/")));
+        // .andExpect(header().string("Location", containsString("/api/v1/customers/" +
+        // customerId + "/orders/")));
         // Removed OpenAPI validation for this specific endpoint
         // .andExpect(openApi().isValid(OAC_SPEC));
-
 
         then(beerOrderService).should().placeOrder(any(UUID.class), any(BeerOrderDto.class));
 
@@ -174,12 +171,8 @@ class BeerOrderControllerTest {
     }
 
     private BeerOrderDto buildOrderDto() {
-        List<BeerOrderLineDto> orderLines = Collections.singletonList(BeerOrderLineDto.builder()
-            .id(UUID.randomUUID())
-            .beerId(beerId)
-            .upc("123123")
-            .orderQuantity(5)
-            .build());
+        List<BeerOrderLineDto> orderLines = Collections.singletonList(
+                BeerOrderLineDto.builder().id(UUID.randomUUID()).beerId(beerId).upc("123123").orderQuantity(5).build());
 
         return BeerOrderDto.builder()
             .customerId(customerId)
@@ -191,11 +184,10 @@ class BeerOrderControllerTest {
 
     @Test
     void getOrder() throws Exception {
-        given(beerOrderService.getOrderById(customerUUIDCaptor.capture(),
-            orderUUIDCaptor.capture())).willReturn(getBeerOrderDtoResponse());
+        given(beerOrderService.getOrderById(customerUUIDCaptor.capture(), orderUUIDCaptor.capture()))
+            .willReturn(getBeerOrderDtoResponse());
 
-        mockMvc.perform(get(API_ROOT + customerId + "/orders/" + orderId)
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(API_ROOT + customerId + "/orders/" + orderId).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.customerId", is(customerId.toString())))
@@ -210,4 +202,5 @@ class BeerOrderControllerTest {
             .andExpect(status().isNoContent())
             .andExpect(openApi().isValid(OAC_SPEC));
     }
+
 }

@@ -20,6 +20,7 @@ import java.util.UUID;
 public class BeerOrderValidationListener {
 
     private final JmsTemplate jmsTemplate;
+
     private final ObjectMapper objectMapper;
 
     @Value("${sfg.brewery.queues.validate-order-result}")
@@ -28,7 +29,7 @@ public class BeerOrderValidationListener {
     @JmsListener(destination = "${sfg.brewery.queues.validate-order}")
     public void listen(Message message) throws JMSException {
         log.info("Beer Order Validation Mock received request: {}", message);
-        //  await().atLeast(1L, TimeUnit.SECONDS).until(() -> true);
+        // await().atLeast(1L, TimeUnit.SECONDS).until(() -> true);
 
         String jsonString = message.getBody(String.class);
         JsonNode event = objectMapper.readTree(jsonString);
@@ -43,16 +44,19 @@ public class BeerOrderValidationListener {
         if (beerOrder.get("customerRef") != null) {
             if (beerOrder.get("customerRef").asString().equals("fail-validation")) {
                 isValid = false;
-            } else if (beerOrder.get("customerRef").asString().equals("dont-validate")) {
+            }
+            else if (beerOrder.get("customerRef").asString().equals("dont-validate")) {
                 sendOrder = false;
             }
         }
 
         if (sendOrder) {
-            jmsTemplate.convertAndSend(validateOrderResultQueue, BeerOrderValidationResult.builder()
-                .beerOrderId(UUID.fromString(orderId.asString()))
-                .isValid(isValid)
-                .build());
+            jmsTemplate.convertAndSend(validateOrderResultQueue,
+                    BeerOrderValidationResult.builder()
+                        .beerOrderId(UUID.fromString(orderId.asString()))
+                        .isValid(isValid)
+                        .build());
         }
     }
+
 }

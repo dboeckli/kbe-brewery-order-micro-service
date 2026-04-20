@@ -25,8 +25,10 @@ public class BeerOrderValidationResultListener {
         final UUID beerOrderId = result.getBeerOrderId();
         if (result.getIsValid()) {
             beerOrderManager.beerOrderPassedValidation(beerOrderId);
-        } else {
+        }
+        else {
             beerOrderManager.beerOrderFailedValidation(beerOrderId);
         }
     }
+
 }

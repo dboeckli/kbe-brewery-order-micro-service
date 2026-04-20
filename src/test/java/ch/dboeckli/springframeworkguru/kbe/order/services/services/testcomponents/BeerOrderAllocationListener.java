@@ -24,8 +24,11 @@ import java.util.UUID;
 public class BeerOrderAllocationListener {
 
     private final JmsTemplate jmsTemplate;
+
     private final ObjectMapper objectMapper;
+
     private final BeerOrderRepository beerOrderRepository;
+
     private final BeerOrderMapper beerOrderMapper;
 
     @Value("${sfg.brewery.queues.allocate-order-result}")
@@ -49,17 +52,20 @@ public class BeerOrderAllocationListener {
             log.info("########################################");
             if (beerOrder.get("customerRef").asString().equals("allocation-fail")) {
                 allocationError = true;
-            } else if (beerOrder.get("customerRef").asString().equals("dont-allocate")) {
+            }
+            else if (beerOrder.get("customerRef").asString().equals("dont-allocate")) {
                 sendOrder = false;
             }
         }
 
         if (sendOrder) {
-            jmsTemplate.convertAndSend(allocateOrderResultQueue, AllocateBeerOrderResult.builder()
-                .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrderFromDB))
-                .allocationError(allocationError)
-                .pendingInventory(false)
-                .build());
+            jmsTemplate.convertAndSend(allocateOrderResultQueue,
+                    AllocateBeerOrderResult.builder()
+                        .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrderFromDB))
+                        .allocationError(allocationError)
+                        .pendingInventory(false)
+                        .build());
         }
     }
+
 }

@@ -37,7 +37,9 @@ import java.util.UUID;
 public abstract class BaseServiceTest {
 
     public final UUID uuid1 = UUID.fromString("0ee5a0bc-f113-4b81-803d-2339787e9a87");
+
     public final UUID uuid2 = UUID.fromString("3a9dbef1-9671-4429-a661-085988a50692");
+
     public final UUID uuid3 = UUID.fromString("1b92eaa8-79aa-4257-a4ba-049f687cc7a9");
 
     @Autowired
@@ -53,44 +55,41 @@ public abstract class BaseServiceTest {
     BeerOrderLineRepository beerOrderLineRepository;
 
     BeerDto testBeerGalaxy;
+
     BeerDto testBeerJava;
+
     BeerDto testBeerMangoBob;
 
     Customer testCustomer;
+
     BeerOrder testOrder1;
+
     BeerOrder testOrder2;
+
     BeerOrder testOrder3;
 
     @BeforeEach
     void setUp() {
-        testBeerGalaxy = BeerDto.builder()
-            .id(uuid1)
-            .beerName("Galaxy Cat")
-            .beerStyle(BeerStyleEnum.PALE_ALE)
-            .build();
+        testBeerGalaxy = BeerDto.builder().id(uuid1).beerName("Galaxy Cat").beerStyle(BeerStyleEnum.PALE_ALE).build();
 
-        testBeerJava = BeerDto.builder()
-            .id(uuid2)
-            .beerName("Java Jill")
-            .beerStyle(BeerStyleEnum.PORTER)
-            .build();
+        testBeerJava = BeerDto.builder().id(uuid2).beerName("Java Jill").beerStyle(BeerStyleEnum.PORTER).build();
 
-        testBeerMangoBob = BeerDto.builder()
-            .id(uuid3)
-            .beerName("Mango Bobs")
-            .beerStyle(BeerStyleEnum.IPA)
-            .build();
+        testBeerMangoBob = BeerDto.builder().id(uuid3).beerName("Mango Bobs").beerStyle(BeerStyleEnum.IPA).build();
 
-        testCustomer = customerRepository.save(Customer
-            .builder()
-            .customerName("Test 1").apiKey(UUID.randomUUID())
-            .build());
+        testCustomer = customerRepository
+            .save(Customer.builder().customerName("Test 1").apiKey(UUID.randomUUID()).build());
 
         Set<BeerOrderLine> orderLines1 = new HashSet<>();
-        orderLines1.add(BeerOrderLine.builder().beerId(testBeerGalaxy.getId().toString())
-            .orderQuantity(15).quantityAllocated(0).build());
-        orderLines1.add(BeerOrderLine.builder().beerId(testBeerJava.getId().toString())
-            .orderQuantity(7).quantityAllocated(0).build());
+        orderLines1.add(BeerOrderLine.builder()
+            .beerId(testBeerGalaxy.getId().toString())
+            .orderQuantity(15)
+            .quantityAllocated(0)
+            .build());
+        orderLines1.add(BeerOrderLine.builder()
+            .beerId(testBeerJava.getId().toString())
+            .orderQuantity(7)
+            .quantityAllocated(0)
+            .build());
 
         testOrder1 = beerOrderRepository.save(BeerOrder.builder()
             .orderStatus(BeerOrderStatusEnum.NEW)
@@ -105,10 +104,16 @@ public abstract class BaseServiceTest {
         beerOrderRepository.save(testOrder1);
 
         Set<BeerOrderLine> orderLines2 = new HashSet<>();
-        orderLines2.add(BeerOrderLine.builder().beerId(testBeerGalaxy.getId().toString())
-            .orderQuantity(15).quantityAllocated(0).build());
-        orderLines2.add(BeerOrderLine.builder().beerId(testBeerJava.getId().toString())
-            .orderQuantity(7).quantityAllocated(0).build());
+        orderLines2.add(BeerOrderLine.builder()
+            .beerId(testBeerGalaxy.getId().toString())
+            .orderQuantity(15)
+            .quantityAllocated(0)
+            .build());
+        orderLines2.add(BeerOrderLine.builder()
+            .beerId(testBeerJava.getId().toString())
+            .orderQuantity(7)
+            .quantityAllocated(0)
+            .build());
 
         testOrder2 = beerOrderRepository.save(BeerOrder.builder()
             .orderStatus(BeerOrderStatusEnum.NEW)
@@ -123,10 +128,16 @@ public abstract class BaseServiceTest {
         beerOrderRepository.save(testOrder2);
 
         Set<BeerOrderLine> orderLines3 = new HashSet<>();
-        orderLines3.add(BeerOrderLine.builder().beerId(testBeerGalaxy.getId().toString())
-            .orderQuantity(15).quantityAllocated(0).build());
-        orderLines3.add(BeerOrderLine.builder().beerId(testBeerJava.getId().toString())
-            .orderQuantity(7).quantityAllocated(0).build());
+        orderLines3.add(BeerOrderLine.builder()
+            .beerId(testBeerGalaxy.getId().toString())
+            .orderQuantity(15)
+            .quantityAllocated(0)
+            .build());
+        orderLines3.add(BeerOrderLine.builder()
+            .beerId(testBeerJava.getId().toString())
+            .orderQuantity(7)
+            .quantityAllocated(0)
+            .build());
 
         testOrder3 = beerOrderRepository.save(BeerOrder.builder()
             .orderStatus(BeerOrderStatusEnum.NEW)
@@ -140,4 +151,5 @@ public abstract class BaseServiceTest {
 
         beerOrderRepository.saveAndFlush(testOrder3);
     }
+
 }

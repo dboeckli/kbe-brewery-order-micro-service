@@ -30,14 +30,13 @@ public class AllocationFailureAction implements Action<BeerOrderStatusEnum, Beer
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
 
-        BeerOrder beerOrder = context.getStateMachine().getExtendedState()
-            .get(ORDER_OBJECT_HEADER, BeerOrder.class);
+        BeerOrder beerOrder = context.getStateMachine().getExtendedState().get(ORDER_OBJECT_HEADER, BeerOrder.class);
 
+        jmsTemplate.convertAndSend(allocateFailureQueue,
+                AllocationFailureEvent.builder().beerOrderId(beerOrder.getId()).build());
 
-        jmsTemplate.convertAndSend(allocateFailureQueue, AllocationFailureEvent.builder()
-            .beerOrderId(beerOrder.getId())
-            .build());
-
-        log.info("Sent request to queue " + allocateFailureQueue + " for Beer Order Id: " + beerOrder.getId().toString());
+        log.info("Sent request to queue " + allocateFailureQueue + " for Beer Order Id: "
+                + beerOrder.getId().toString());
     }
+
 }
