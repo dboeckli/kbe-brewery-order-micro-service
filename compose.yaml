@@ -97,7 +97,7 @@ services:
       decode_log_event_to_json_object: "true"
   
   busybox:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     container_name: busybox
     depends_on:
       inventory-service:
