@@ -13,7 +13,7 @@ Artemis Gui when starting locally: http://localhost:8161/console
 
 ### Deployment with Kubernetes
 
-To run maven filtering for destination target/k8s
+To run maven filtering for destination target/k8s.
 
 ```bash
 mvn clean install -DskipTests 
