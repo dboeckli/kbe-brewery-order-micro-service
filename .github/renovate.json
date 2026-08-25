@@ -64,6 +64,18 @@
             "enabled": false
         },
         {
+            "description": "Private dboeckli Maven packages on GitHub Packages",
+            "matchDatasources": [
+                "maven"
+            ],
+            "matchPackageNames": [
+                "/^ch\\.dboeckli\\./"
+            ],
+            "registryUrls": [
+                "https://maven.pkg.github.com/dboeckli/kbe-brewery-lib"
+            ]
+        },
+        {
             "matchCategories": [
                 "docker"
             ],
