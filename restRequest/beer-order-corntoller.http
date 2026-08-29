@@ -1,8 +1,14 @@
 ###
+< scripts/traceparent.js
 GET http://localhost:{{application-port}}/api/v1/customers/?
     pageNumber={{$random.integer(100)}}&
     pageSize={{$random.integer(100)}}
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=kbe-brewery-order-micro-service
 
 ###
+< scripts/traceparent.js
 GET http://localhost:{{application-port}}/api/v1/customers/f76773fe-6f31-47d1-8b8b-e3d40e2b2fff/orders
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=kbe-brewery-order-micro-service
 
