@@ -38,7 +38,7 @@ spec:
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.beerService.serviceFQDN  }} {{ .Values.sfg.beerService.port }}; do echo "[busybox: wait-for-beer-service] waiting for beer service"; sleep 2; done; echo "[busybox: wait-for-beer-service] beer service is available"' ]
 
       containers:
-        - name: {{ .Chart.Name }}
+        - name: @project.artifactId@
           image: "{{ .Values.image.registry }}/@project.artifactId@:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
