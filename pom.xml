@@ -73,7 +73,7 @@
 
     <wiremock.version>4.2.2</wiremock.version>
 
-    <swagger-request-validator.version>2.46.1</swagger-request-validator.version>
+    <swagger-request-validator.version>3.0.0</swagger-request-validator.version>
 
     <!-- Sonar -->
     <sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
@@ -247,19 +247,13 @@
 
     <dependency>
       <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-core</artifactId>
+      <artifactId>openapi-request-validator-core</artifactId>
       <version>${swagger-request-validator.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-mockmvc</artifactId>
-      <version>${swagger-request-validator.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.atlassian.oai</groupId>
-      <artifactId>swagger-request-validator-springmvc</artifactId>
+      <artifactId>openapi-request-validator-mockmvc</artifactId>
       <version>${swagger-request-validator.version}</version>
       <scope>test</scope>
     </dependency>
