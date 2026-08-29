@@ -1,3 +1,6 @@
 ### get beers
+< scripts/traceparent.js
 GET http://localhost:{{beer-service-port}}/api/v1/beer
 Accept: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=kbe-brewery-order-micro-service
