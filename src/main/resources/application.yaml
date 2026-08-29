@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: kbe-brewery-order-micro-service
+
+  threads:
+    virtual:
+      enabled: true
     
   docker:
     compose:
@@ -106,9 +110,28 @@ management:
       export:
         enabled: false
   tracing:
+    propagation:
+      type: w3c
+      produce: w3c
+      consume: w3c
+    baggage:
+      enabled: true
+      # Specify which baggage fields should be propagated to downstream services
+      correlation:
+        # Also make baggage available in MDC for logging
+        fields:
+          - testBaggage
+        enabled: true
+      # Erlaubt das Empfangen des Headers "baggage: testBaggage=..." der im http request gesetzt wird
+      remote-fields:
+        - testBaggage
+      # KOPIERT den Wert aus dem Baggage in die Span-Labels (Attributes)
+      tag-fields:
+        - testBaggage
     export:
       otlp:
         enabled: false
+      enabled: true
     sampling:
       probability: 1.0
 
@@ -127,6 +150,7 @@ logging:
     org.springframework.statemachine.support: error
     org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: ERROR
     org.springframework.web.HttpLogging: ERROR
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
         
 sfg:
   brewery:
