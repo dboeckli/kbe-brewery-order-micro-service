@@ -363,6 +363,8 @@
               <include>**/*.md</include>
             </includes>
             <excludes>
+              <exclude>AGENTS.md</exclude>
+              <exclude>CLAUDE.md</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
@@ -399,7 +401,7 @@
               <exclude>**/node_modules/**</exclude>
             </excludes>
             <shfmt>
-              <version>3.13.0</version>
+              <version>3.13.1</version>
             </shfmt>
           </shell>
         </configuration>

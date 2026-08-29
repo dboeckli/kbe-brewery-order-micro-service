@@ -110,6 +110,59 @@ kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=kbe-brewery-o
 
 You can use the actuator rest call to verify via port 30081
 
+## Sandbox (local dev environment)
+
+The sandbox consists of the app (Spring Boot, port 8081) plus MySQL and Artemis (JMS), provided by
+`compose.yaml`, together with the sibling services beer, inventory and inventory-failover. The
+infrastructure services start automatically via `spring.docker.compose.enabled=true` when the app
+boots.
+
+### Start the sandbox (opencode-sandbox-kit)
+
+The sandbox is provisioned by the opencode-sandbox-kit and runs as a Docker container. It mounts this
+repo, starts opencode, and connects the IntelliJ MCP server.
+
+Allow the kit source (GitHub without cloning):
+
+```powershell
+sbx settings set kit.allowedSources --% "[\"docker.io/\",\"github.com/dboeckli/\"]"
+```
+
+Start a new sandbox:
+
+```powershell
+sbx run opencode --name kbe-brewery-order-micro-service --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" "C:\development\projects\kbe-brewery-order-micro-service"
+```
+
+Start the sandbox with Kubernetes support:
+
+```powershell
+sbx run opencode --name kbe-brewery-order-micro-service --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" "C:\development\projects\kbe-brewery-order-micro-service" "$env:USERPROFILE\.kube:ro"
+```
+
+Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
+
+```powershell
+sbx kit add kbe-brewery-order-micro-service "git+https://github.com/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
+```
+
+### Start the app
+
+Run the `BreweryOrderService` run configuration in IntelliJ
+(`.run/BreweryOrderService.run.xml`, main class
+`ch.dboeckli.springframeworkguru.kbe.order.services.BreweryOrderService`). Alternatively start via
+`./mvnw spring-boot:run`.
+
+The compose file brings up:
+
+- `mysql` (port 3306) — database `beerservice`
+- `jms` (ports 61616/8161) — Artemis broker + console
+
+### Verify
+
+- Actuator health: http://localhost:8081/actuator/health
+- Artemis console: http://localhost:8161/console
+
 ## Contributing
 
 Contributions to improve this template are welcome. Please follow the standard GitHub flow:
