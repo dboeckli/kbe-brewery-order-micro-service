@@ -1,3 +1,6 @@
+nameOverride: "kbe-brewery-order-micro-service"
+fullnameOverride: "kbe-brewery-order-micro-service"
+
 global:
   timezone: Europe/Zurich
   timezonePath: /etc/localtime
@@ -52,6 +55,8 @@ probes:
 mysql:
   enabled: true
 
+  fullnameOverride: "kbe-brewery-order-micro-service-mysql"
+
   database: beerservice
 
   port: 3306
@@ -67,6 +72,8 @@ mysql:
 
 jms:
   enabled: true
+
+  fullnameOverride: "kbe-brewery-order-micro-service-jms"
 
   broker:
     port: 61616
@@ -105,14 +112,19 @@ ingress:
 
 # this is the alias for kbe-brewery-inventory-micro-service. override does not work with the name of the service
 inventory-service:
+  fullnameOverride: "kbe-brewery-order-micro-service-inventory-service"
   jms:
     enabled: false
     serviceFQDN: "kbe-brewery-order-micro-service-jms.kbe-brewery-order-micro-service.svc.cluster.local"
   mysql:
     enabled: false
     serviceFQDN: "kbe-brewery-order-micro-service-mysql.kbe-brewery-order-micro-service.svc.cluster.local"
-  
+
+inventory-failover:
+  fullnameOverride: "kbe-brewery-order-micro-service-inventory-failover"
+
 beer-service:
+  fullnameOverride: "kbe-brewery-order-micro-service-beer-service"
   jms:
     enabled: false
     serviceFQDN: "kbe-brewery-order-micro-service-jms.kbe-brewery-order-micro-service.svc.cluster.local"

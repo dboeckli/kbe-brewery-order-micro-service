@@ -30,7 +30,7 @@ services:
   
   inventory-failover:
     container_name: inventory-failover
-    image: domboeckli/kbe-brewery-inventory-failover:0.0.2-SNAPSHOT
+    image: domboeckli/kbe-brewery-inventory-failover:0.0.2-snapshot
     ports:
       - 8083:8083
     depends_on:
@@ -41,7 +41,7 @@ services:
 
   inventory-service:
     container_name: inventory-service
-    image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
+    image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-snapshot
     ports:
       - 8082:8082
     depends_on:
@@ -68,7 +68,7 @@ services:
   
   beer-service:
     container_name: beer-service
-    image: domboeckli/kbe-brewery-beer-micro-service:0.0.14-SNAPSHOT
+    image: domboeckli/kbe-brewery-beer-micro-service:0.0.14-snapshot
     ports:
       - 8080:8080
     depends_on:
