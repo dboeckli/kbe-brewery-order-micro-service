@@ -141,6 +141,16 @@ management:
       export:
         enabled: false
 
+jdbc:
+  includes: [CONNECTION, QUERY, FETCH, KEYS]
+  opentelemetry:
+    analysis:
+      enabled: true
+      summary:
+        enabled: true
+      sanitize:
+        enabled: true
+
 logging:
   level:
     org.springframework.statemachine.support: error
