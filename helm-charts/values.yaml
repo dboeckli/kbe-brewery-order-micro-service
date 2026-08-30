@@ -21,6 +21,13 @@ service:
   targetPort: 8081
   nodePort: 30081
 
+otelCollector:
+  # Enables OTLP export of traces and metrics to the OpenTelemetry Collector.
+  # Defaults to the collector deployed by the kbe-brewery-gateway chart.
+  enabled: true
+  serviceFQDN: "kbe-brewery-gateway-otel-collector.kbe-brewery-gateway.svc.cluster.local"
+  port: 4318
+
 externalAccess:
   host: "localhost"
   protocol: "http"
