@@ -56,6 +56,16 @@ spec:
               value: {{ .Values.jms.broker.port | quote }}
             - name: SFG_BREWERY_BEER_SERVICE_HOST
               value: "http://{{ .Values.sfg.beerService.serviceFQDN }}:{{ .Values.sfg.beerService.port }}"
+            {{- if .Values.otelCollector.enabled }}
+            - name: MANAGEMENT_TRACING_EXPORT_OTLP_ENABLED
+              value: "true"
+            - name: MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT
+              value: "http://{{ .Values.otelCollector.serviceFQDN }}:{{ .Values.otelCollector.port }}/v1/traces"
+            - name: MANAGEMENT_OTLP_METRICS_EXPORT_ENABLED
+              value: "true"
+            - name: MANAGEMENT_OTLP_METRICS_EXPORT_URL
+              value: "http://{{ .Values.otelCollector.serviceFQDN }}:{{ .Values.otelCollector.port }}/v1/metrics"
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "application-template.fullname" . }}-spring-secrets
