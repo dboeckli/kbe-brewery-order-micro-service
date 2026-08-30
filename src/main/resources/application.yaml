@@ -147,7 +147,7 @@ jdbc:
     analysis:
       enabled: true
       summary:
-        enabled: true
+        enabled: false
       sanitize:
         enabled: true
 
