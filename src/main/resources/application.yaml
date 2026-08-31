@@ -147,9 +147,13 @@ jdbc:
     analysis:
       enabled: true
       summary:
-        enabled: true
+        enabled: false
       sanitize:
         enabled: true
+  # Caution: binds parameter values (e.g. UUIDs, prices) into the spans and may
+  # expose sensitive data in production - enable deliberately only.
+  resultset-operations:
+    include-parameter-values: true
 
 logging:
   level:
