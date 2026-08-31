@@ -150,6 +150,10 @@ jdbc:
         enabled: false
       sanitize:
         enabled: true
+  # Achtung: bindet gebundene Parameterwerte (z.B. UUIDs, Preise) in die Spans ein und
+  # offenbart damit in Produktion potenziell heikle Daten - nur gezielt aktivieren.
+  resultset-operations:
+    include-parameter-values: true
 
 logging:
   level:
