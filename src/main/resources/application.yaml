@@ -152,7 +152,7 @@ jdbc:
         enabled: true
   # Caution: binds parameter values (e.g. UUIDs, prices) into the spans and may
   # expose sensitive data in production - enable deliberately only.
-  resultset-operations:
+  datasource-proxy:
     include-parameter-values: true
 
 logging:
