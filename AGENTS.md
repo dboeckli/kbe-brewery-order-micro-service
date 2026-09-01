@@ -34,6 +34,15 @@ is needed here. On a normal host (Windows/CI) this does not apply either.
 - Everything else (pom.xml, `**/*.md` except `AGENTS.md`/`CLAUDE.md`, json, application yaml,
   `**/*.sh`): Spotless → fix with `./mvnw spotless:apply`.
 
+## Documentation lookup (Context7)
+
+- Use the Context7 CLI (`npx ctx7 docs <libraryId> <query>`) whenever a task involves a library,
+  framework, SDK, or configuration property — even well-known ones (Spring Boot, Micrometer, etc.).
+  Do not rely on training memory; schemas and property names change.
+- Example: JDBC observability config is documented as `/jdbc-observations/datasource-micrometer`
+  (`jdbc.datasource-proxy.include-parameter-values`, not `jdbc.resultset-operations.include-parameter-values`).
+- Find unknown IDs with `npx ctx7 library "<name>" "<topic>"`; scope queries to a single concept.
+
 ## External dependency gotcha
 
 - DTOs and helpers come from the external module `ch.dboeckli...:kbe-brewery-lib` (GitHub Packages,
