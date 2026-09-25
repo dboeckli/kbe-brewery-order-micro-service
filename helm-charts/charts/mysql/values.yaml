@@ -20,5 +20,5 @@ ingress:
 
 mysqlImage:
   repository: mysql
-  tag: "8.4.11"
+  tag: "26.7.0"
   pullPolicy: IfNotPresent
