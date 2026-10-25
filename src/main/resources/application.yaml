@@ -155,12 +155,20 @@ jdbc:
   datasource-proxy:
     include-parameter-values: true
 
+appconfig:
+  request-logging:
+    # set to false to remove the request logging filter from the chain entirely
+    enabled: true
+    # request URI prefixes that are not logged
+    exclude-paths:
+      - /actuator/health
+
 logging:
   level:
     org.springframework.statemachine.support: error
     org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: ERROR
     org.springframework.web.HttpLogging: ERROR
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    ch.dboeckli.springframeworkguru.kbe.order.services.config.RequestLoggingFilter: DEBUG
         
 sfg:
   brewery:
