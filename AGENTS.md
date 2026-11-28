@@ -62,3 +62,8 @@ is needed here. On a normal host (Windows/CI) this does not apply either.
 - `compose.yaml` is auto-started via `spring.docker.compose` on boot (mysql :3306, jms :61616/:8161).
 - Artemis console: http://localhost:8161/console
 - Manual API testing: IntelliJ HTTP files in `restRequest/`.
+
+## CI / Helm
+
+- CI pins Helm `v4.3.2` via `azure/setup-helm@v5.1.0` before the first Helm call (runner default is
+  Helm 3). The sandbox kit ships Helm 4 as `helm`, so `-Dhelm.executable=helm4` is no longer needed.
